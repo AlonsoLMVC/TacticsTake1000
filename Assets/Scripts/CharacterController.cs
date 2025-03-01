@@ -11,6 +11,9 @@ public class CharacterController : MonoBehaviour
 
     public bool IsMoving => isMoving;
 
+    private Node currentNode; //  Stores the node the character is currently standing on
+
+
     public void SetPath(List<Node> newPath)
     {
         if (newPath == null || newPath.Count == 0) return;
@@ -35,7 +38,7 @@ public class CharacterController : MonoBehaviour
 
     private void MoveAlongPath()
     {
-        if (path == null || path.Count < 2) // Ensure there are at least two nodes to compare
+        if (path == null || path.Count == 0)
         {
             isMoving = false;
             return;
@@ -45,13 +48,15 @@ public class CharacterController : MonoBehaviour
         {
             isMoving = true;
 
-            Node currentNode = path[0]; // First node in path
-            Node targetNode = path[1]; // Second node in path (the first movement step)
+            
 
-            float currentHeight = currentNode.tileObject.transform.position.y + (currentNode.tileObject.transform.localScale.y / 2f);
+            Vector3 currentPosition = transform.position; 
+            Node targetNode = path[0];
+
+            float currentHeight = currentPosition.y;
             float targetHeight = targetNode.tileObject.transform.position.y + (targetNode.tileObject.transform.localScale.y / 2f);
 
-            Debug.Log($"Current Node ({currentNode.x}, {currentNode.y}) - Height: {currentHeight}");
+            Debug.Log($"Current Position: ({currentPosition.x}, {currentPosition.z}) - Height: {currentHeight}");
             Debug.Log($"Target Node ({targetNode.x}, {targetNode.y}) - Height: {targetHeight}");
             Debug.Log($"Height Difference: {targetHeight - currentHeight}");
 
@@ -66,6 +71,7 @@ public class CharacterController : MonoBehaviour
             }
         }
     }
+
 
 
 
@@ -113,13 +119,17 @@ public class CharacterController : MonoBehaviour
         {
             yield return new WaitForSeconds(0.1f); // Prevent immediate re-triggering
             StartCoroutine(MoveToTile(path[pathIndex])); //  Chain the next movement step
+
+
+
+
         }
         else
         {
             isMoving = false;
         }
     }
-
+    
 
 
 
