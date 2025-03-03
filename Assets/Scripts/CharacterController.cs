@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
+
     private List<Node> path;
     private int pathIndex;
     private bool isMoving = false;
@@ -84,13 +84,13 @@ public class CharacterController : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 targetPos = new Vector3(targetNode.tileObject.transform.position.x, targetNode.tileObject.transform.position.y + placementOffset, targetNode.tileObject.transform.position.z);
 
-        float jumpDuration = 0.6f;
+        float jumpDuration = 0.4f;
         float elapsedTime = 0f;
 
         float jumpHeight = 0.7f; // Maximum height of the jump
 
         //agarrando impulso
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(jumpDuration/5);
 
 
 
@@ -155,7 +155,7 @@ public class CharacterController : MonoBehaviour
         float targetY = targetNode.tileObject.transform.position.y + placementOffset;
         Vector3 targetPosition = new Vector3(targetNode.x, targetY, targetNode.y);
 
-        float moveDuration = 0.3f;
+        float moveDuration = 0.2f;
         float elapsedTime = 0f;
         Vector3 startPosition = transform.position;
 

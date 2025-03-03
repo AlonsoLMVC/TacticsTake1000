@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class GridManager : MonoBehaviour
 {
-    public int width = 10;
-    public int height = 10;
+    public int width = 30;
+    public int height = 15;
     public float cellSize = 1f;
     public GameObject tilePrefab;
 
@@ -57,6 +58,8 @@ public class GridManager : MonoBehaviour
 
         characterScript.currentNode = spawnTile;
         characterScript.placementOffset = placementOffset;
+
+        Camera.main.GetComponent<CameraController>().assignPlayer(characterInstance);
     }
 
 
@@ -104,7 +107,6 @@ public class GridManager : MonoBehaviour
         float offsetX = Random.Range(0f, 100f);
         float offsetY = Random.Range(0f, 100f);
 
-        float baseHeight = 0f; // Base height of each cube
         float cubeHeight = 0.5f; // Individual cube prefab height
 
         for (int x = 0; x < width; x++)
@@ -160,10 +162,34 @@ public class GridManager : MonoBehaviour
             {
                 if (node.tileObject == clickedObject)
                 {
-                    node.ToggleWalkability();
+                    node.ToggleHighlight();
+
+                    
+
+
+
+
                     break;
+
                 }
             }
+        }
+    }
+
+
+    public void highlightSurroundingTiles()
+    {
+        Debug.Log("click");
+        CharacterController cc = characterPrefab.GetComponent<CharacterController>();
+
+        List<Node> list = new List<Node>();
+        list.Add(cc.currentNode);
+        list = getSurroundingNodes(2, list);
+
+
+        foreach (Node highlightNode in list)
+        {
+            highlightNode.ToggleHighlight();
         }
     }
 
@@ -202,6 +228,8 @@ public class GridManager : MonoBehaviour
 
     private void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
         if (Input.GetMouseButtonDown(0)) // Left Click for obstacles
         {
             HandleClick();
@@ -313,4 +341,39 @@ public class GridManager : MonoBehaviour
     }
 
 
+    List<Node> getSurroundingNodes(int moves, List<Node> tilesToBeChecked)
+    {
+        List<Node> surroundingTiles = new List<Node>(tilesToBeChecked); // Store all found tiles
+        List<Node> edgeTiles = new List<Node>(tilesToBeChecked); // Tiles to be checked in the next iteration
+
+        while (moves > 0)
+        {
+            List<Node> newEdgeTiles = new List<Node>();
+
+            foreach (Node tile in edgeTiles)
+            {
+                List<Node> neighbors = GetNeighbors(tile);
+
+                foreach (Node neighbor in neighbors)
+                {
+                    if (!surroundingTiles.Contains(neighbor) && neighbor != null)
+                    {
+                        surroundingTiles.Add(neighbor);
+                        newEdgeTiles.Add(neighbor);
+                    }
+                }
+            }
+
+            edgeTiles = newEdgeTiles; // Update edge tiles for the next iteration
+            moves--;
+        }
+
+        return surroundingTiles;
+    }
+
+
+
+
+
 }
+

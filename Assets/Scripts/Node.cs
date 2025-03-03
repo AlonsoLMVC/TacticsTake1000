@@ -17,6 +17,8 @@ public class Node
 
     public int altitude;
 
+    public bool isHighlighted;
+
     public Node(int x, int y, bool isWalkable, GameObject tileObject, int altitude)
     {
         this.x = x;
@@ -24,6 +26,7 @@ public class Node
         this.isWalkable = isWalkable;
         this.tileObject = tileObject;
         this.altitude = altitude;
+        isHighlighted = false;
         UpdateColor();
     }
 
@@ -50,4 +53,22 @@ public class Node
             }
         }
     }
+
+    
+    public void ToggleHighlight()
+    {
+        if (tileObject != null)
+        {
+            Transform highlightTransform = tileObject.transform.Find("Highlight");
+            if (highlightTransform != null)
+            {
+                GameObject highlight = highlightTransform.gameObject;
+                highlight.SetActive(!highlight.activeSelf);
+            }
+        }
+    }
+
+
+    
+    
 }

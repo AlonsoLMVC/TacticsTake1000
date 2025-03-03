@@ -4,7 +4,8 @@ public class CameraController : MonoBehaviour
 {
     public float moveSpeed = 10f;
     public float zoomSpeed = 5f;
-    public float rotationSpeed = 100f;
+    public float rotationAroundPlayerSpeed = 300f; // Speed for rotating around player
+
 
     private float minZoom = 3f;
     private float maxZoom = 20f;
@@ -12,6 +13,12 @@ public class CameraController : MonoBehaviour
 
     public int gridWidth = 10;  // Assigned from GridManager
     public int gridHeight = 10; // Assigned from GridManager
+
+    public Transform playerTransform; // Reference to the player
+    private bool isRotating = false;
+    private float targetAngle;
+
+
 
     private void Start()
     {
@@ -22,8 +29,8 @@ public class CameraController : MonoBehaviour
     private void Update()
     {
         HandleMovement();
-        HandleRotation();
         HandleZoom();
+        HandlePlayerRotation();
     }
 
     void CenterCamera()
@@ -60,19 +67,37 @@ public class CameraController : MonoBehaviour
         transform.position += moveDirection * moveSpeed * Time.deltaTime;
     }
 
-    void HandleRotation()
-    {
-        if (Input.GetMouseButton(1))
-        {
-            float rotateX = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
-            transform.RotateAround(Vector3.zero, Vector3.up, rotateX);
-        }
-    }
 
     void HandleZoom()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         cam.orthographicSize -= scroll * zoomSpeed;
         cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
+    }
+
+    public void assignPlayer(GameObject playerGameObject)
+    {
+        playerTransform = playerGameObject.transform;
+    }
+
+    void HandlePlayerRotation()
+    {
+        if (Input.GetKeyDown(KeyCode.T) && playerTransform.gameObject != null && !isRotating)
+        {
+            isRotating = true;
+            targetAngle = transform.eulerAngles.y + 90f; // Set target angle 90 degrees from current rotation
+        }
+
+        if (isRotating)
+        {
+            float step = rotationAroundPlayerSpeed * Time.deltaTime;
+            float newAngle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, step);
+            transform.RotateAround(playerTransform.position, Vector3.up, newAngle - transform.eulerAngles.y);
+
+            if (Mathf.Abs(newAngle - targetAngle) < 0.1f)
+            {
+                isRotating = false;
+            }
+        }
     }
 }
