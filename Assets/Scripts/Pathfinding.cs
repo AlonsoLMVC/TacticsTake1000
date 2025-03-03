@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Pathfinding : MonoBehaviour
 {
-    public GridManager gridManager;
+    public GameManager gridManager;
     private PriorityQueue<Node> openList;
     private HashSet<Node> closedList;
 

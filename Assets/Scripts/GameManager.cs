@@ -3,18 +3,39 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public class GridManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public int width = 30;
-    public int height = 15;
+
+
+
+        public enum GameState
+    {
+        MenuNav,       // Navigating menus
+        MoveSelect,    // Selecting where to move
+        DirectionSelect, // Choosing facing direction
+        ChooseTarget,  // Selecting an attack target
+        PreviewAttack, // Previewing attack outcome
+        InAction       // Executing an action
+    }
+
+    public GameState currentState;
+
+
+
+
+
+    public int width;
+    public int height;
     public float cellSize = 1f;
     public GameObject tilePrefab;
 
     private Node[,] grid;
 
+    List<Node> highlightedNodes = new List<Node>();
+
     public GameObject characterPrefab; // Assign in the Inspector
     private GameObject characterInstance;
-    private CharacterController characterScript;
+    private PlayerController characterScript;
     public GameObject cubePrefab;
 
     private void Start()
@@ -30,7 +51,23 @@ public class GridManager : MonoBehaviour
             cameraController.gridHeight = height;
         }
 
+        currentState = GameState.MenuNav;
+
     }
+
+
+    public void setState(GameState newState){
+
+        
+
+
+
+
+    }
+
+
+
+
 
     void SpawnCharacter()
     {
@@ -54,8 +91,9 @@ public class GridManager : MonoBehaviour
 
         // Instantiate the character
         characterInstance = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);
-        characterScript = characterInstance.GetComponent<CharacterController>();
+        characterScript = characterInstance.GetComponent<PlayerController>();
 
+        Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
         characterScript.currentNode = spawnTile;
         characterScript.placementOffset = placementOffset;
 
@@ -138,6 +176,7 @@ public class GridManager : MonoBehaviour
                 if (topCube != null)
                 {
                     grid[x, y] = new Node(x, y, true, topCube, altitude);
+                    
                 }
             }
         }
@@ -162,12 +201,13 @@ public class GridManager : MonoBehaviour
             {
                 if (node.tileObject == clickedObject)
                 {
-                    node.ToggleHighlight();
-
                     
 
+                    if(node.isHighlighted){
+                        MoveCharacterToNode(node);
 
-
+                    }
+                    
 
                     break;
 
@@ -180,17 +220,29 @@ public class GridManager : MonoBehaviour
     public void highlightSurroundingTiles()
     {
         Debug.Log("click");
-        CharacterController cc = characterPrefab.GetComponent<CharacterController>();
+        PlayerController cc = characterInstance.GetComponent<PlayerController>();
 
         List<Node> list = new List<Node>();
         list.Add(cc.currentNode);
-        list = getSurroundingNodes(2, list);
+        Debug.Log(cc.currentNode);
+        list = getSurroundingNodes(cc.move, list);
 
 
         foreach (Node highlightNode in list)
         {
+            highlightedNodes.Add(highlightNode);
             highlightNode.ToggleHighlight();
         }
+    }
+
+    public void clearHighlightedTiles(){
+
+        foreach (Node node in highlightedNodes){
+            node.ToggleHighlight();
+        }
+
+        highlightedNodes.Clear();
+
     }
 
 
@@ -234,22 +286,19 @@ public class GridManager : MonoBehaviour
         {
             HandleClick();
         }
-        else if (Input.GetMouseButtonDown(1)) // Right Click to move
-        {
-            
-            HandleCharacterMovement();
-        }
         else if (Input.GetKeyDown(KeyCode.R)) // Reset scene
         {
             ReloadScene();
         }
     }
 
-    void HandleCharacterMovement()
+    void MoveCharacterToNode(Node targetNode)
     {
         
         if (characterScript == null || characterScript.IsMoving) return; // Prevent movement mid-action
+        GameObject clickedObject = targetNode.tileObject;
 
+        /*
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -260,27 +309,29 @@ public class GridManager : MonoBehaviour
 
             foreach (Node node in grid)
             {
-                if (node.tileObject == clickedObject && node.isWalkable)
+            */
+                //if (node.tileObject == clickedObject && node.isWalkable)
+                if(targetNode.isWalkable)
                 {
                     Vector3 characterPos = characterInstance.transform.position;
 
                     // Ensure movement is on the correct Y level (top of the tile)
-                    float tileHeight = node.tileObject.transform.localScale.y;
-                    float targetY = node.tileObject.transform.position.y + (tileHeight / 2f) + 0.5f;
+                    float tileHeight = targetNode.tileObject.transform.localScale.y;
+                    float targetY = targetNode.tileObject.transform.position.y + (tileHeight / 2f) + 0.5f;
 
                     List<Node> path = pathfinding.FindPath(
                         new Vector2Int(Mathf.RoundToInt(characterPos.x), Mathf.RoundToInt(characterPos.z)),
-                        new Vector2Int(node.x, node.y)
+                        new Vector2Int(targetNode.x, targetNode.y)
                     );
 
                     if (path != null)
                     {
                         characterScript.SetPath(path);
                     }
-                    break;
+                    
                 }
-            }
-        }
+            //}
+        //}
     }
 
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     private List<Node> path;
@@ -13,7 +13,10 @@ public class CharacterController : MonoBehaviour
 
     public Node currentNode; //  Stores the node the character is currently standing on
 
+    public int move = 4;
+
     public float placementOffset;
+    public GameObject compass;
 
 
     public void SetPath(List<Node> newPath)
@@ -29,6 +32,17 @@ public class CharacterController : MonoBehaviour
             MoveAlongPath();
         }
     }
+
+
+    public void SetCompassActive(bool isActive)
+    {
+        if (compass != null)
+        {
+            compass.gameObject.SetActive(isActive);
+        }
+    }
+
+
 
 
     private void Update()
@@ -140,6 +154,7 @@ public class CharacterController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
             currentNode = targetNode;
+            GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
         }
     }
 
@@ -192,6 +207,8 @@ public class CharacterController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
             currentNode = targetNode;
+            GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
+
         }
     }
 

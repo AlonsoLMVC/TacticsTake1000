@@ -64,6 +64,7 @@ public class Node
             {
                 GameObject highlight = highlightTransform.gameObject;
                 highlight.SetActive(!highlight.activeSelf);
+                isHighlighted = !isHighlighted;
             }
         }
     }
