@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
         float jumpHeight = 0.7f; // Maximum height of the jump
 
         //agarrando impulso
-        yield return new WaitForSeconds(jumpDuration/5);
+        yield return new WaitForSeconds(jumpDuration/3);
 
 
 

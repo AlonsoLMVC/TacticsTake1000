@@ -6,10 +6,11 @@ public class ClosestSphereScaler : MonoBehaviour
     public float defaultScale = 1f;
     public float enlargedScale = 2f;
     private GameObject currentEnlargedSphere;
+    private bool spheresActive = true; // Tracks whether spheres are active
 
     void Update()
     {
-        if (spheres.Length == 0) return;
+        if (!spheresActive || spheres.Length == 0) return;
 
         GameObject closestSphere = null;
         float closestDistance = float.MaxValue;
@@ -18,9 +19,11 @@ public class ClosestSphereScaler : MonoBehaviour
 
         foreach (GameObject sphere in spheres)
         {
+            if (!sphere.activeSelf) continue;
+
             Vector3 screenPosition = Camera.main.WorldToScreenPoint(sphere.transform.position);
             float distance = Vector2.Distance(new Vector2(mousePosition.x, mousePosition.y), new Vector2(screenPosition.x, screenPosition.y));
-            
+
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -46,5 +49,15 @@ public class ClosestSphereScaler : MonoBehaviour
     public Transform GetCurrentEnlargedSphere()
     {
         return currentEnlargedSphere != null ? currentEnlargedSphere.transform : null;
+    }
+
+    // Toggles the spheres' active state
+    public void ToggleSpheres(bool isActive)
+    {
+        spheresActive = isActive;
+        foreach (GameObject sphere in spheres)
+        {
+            sphere.SetActive(isActive);
+        }
     }
 }
