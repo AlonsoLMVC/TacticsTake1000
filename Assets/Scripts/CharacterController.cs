@@ -11,13 +11,16 @@ public class CharacterController : MonoBehaviour
 
     public bool IsMoving => isMoving;
 
-    private Node currentNode; //  Stores the node the character is currently standing on
+    public Node currentNode; //  Stores the node the character is currently standing on
+
+    public float placementOffset;
 
 
     public void SetPath(List<Node> newPath)
     {
+        
         if (newPath == null || newPath.Count == 0) return;
-
+        
         path = newPath;
         pathIndex = 0;
 
@@ -53,17 +56,15 @@ public class CharacterController : MonoBehaviour
             Vector3 currentPosition = transform.position; 
             Node targetNode = path[0];
 
-            float currentHeight = currentPosition.y;
-            float targetHeight = targetNode.tileObject.transform.position.y + (targetNode.tileObject.transform.localScale.y / 2f);
+            float currentAltitude = currentNode.altitude;
+            float targetAltitude = targetNode.altitude;
 
-            Debug.Log($"Current Position: ({currentPosition.x}, {currentPosition.z}) - Height: {currentHeight}");
-            Debug.Log($"Target Node ({targetNode.x}, {targetNode.y}) - Height: {targetHeight}");
-            Debug.Log($"Height Difference: {targetHeight - currentHeight}");
+            Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
-            if (Mathf.Abs(targetHeight - currentHeight) > 0.1f) // Detect height differences
+            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
             {
                 Debug.Log("Height difference detected!");
-                StartCoroutine(PerformJump(targetNode, currentHeight, targetHeight)); // Trigger jump
+                StartCoroutine(PerformJump(targetNode)); // Trigger jump
             }
             else
             {
@@ -76,67 +77,82 @@ public class CharacterController : MonoBehaviour
 
 
 
-
-    private IEnumerator PerformJump(Node targetNode, float startHeight, float targetHeight)
+    private IEnumerator PerformJump(Node targetNode)
     {
         isMoving = true;
 
-        Vector3 startPosition = transform.position;
-        float tileHeight = targetNode.tileObject.transform.localScale.y;
-        float targetY = targetNode.tileObject.transform.position.y + (tileHeight / 2f) + 0.5f;
+        Vector3 startPos = transform.position;
+        Vector3 targetPos = new Vector3(targetNode.tileObject.transform.position.x, targetNode.tileObject.transform.position.y + placementOffset, targetNode.tileObject.transform.position.z);
 
-        Vector3 targetPosition = new Vector3(targetNode.x, targetY, targetNode.y);
-
-        float jumpPeakHeight = Mathf.Max(startHeight, targetHeight) + 1.5f;
         float jumpDuration = 0.6f;
         float elapsedTime = 0f;
 
+        float jumpHeight = 0.7f; // Maximum height of the jump
+
+        //agarrando impulso
+        yield return new WaitForSeconds(0.2f);
+
+
+
         while (elapsedTime < jumpDuration)
         {
+            float t = elapsedTime / jumpDuration; // Normalize time (0 to 1)
+
+            // **Horizontal movement (Linear Interpolation)**
+            Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);
+
+            // **Vertical movement (Parabolic Arc)**
+            float heightOffset = Mathf.Sin(t * Mathf.PI) * jumpHeight; // Sinusoidal arc
+
+            // **Combine horizontal and vertical movement**
+            transform.position = new Vector3(horizontalPos.x, horizontalPos.y + heightOffset, horizontalPos.z);
+
             elapsedTime += Time.deltaTime;
-            float t = elapsedTime / jumpDuration;
-
-            if (startHeight < targetHeight) // Jumping UP
-            {
-                float height = Mathf.Lerp(startHeight, jumpPeakHeight, t * 1.2f);
-                Vector3 midPoint = new Vector3(startPosition.x, height, startPosition.z);
-                transform.position = Vector3.Lerp(startPosition, midPoint, t * 0.6f);
-            }
-            else // Jumping DOWN
-            {
-                Vector3 arcPoint = new Vector3(targetPosition.x, jumpPeakHeight, targetPosition.z);
-                transform.position = Vector3.Lerp(startPosition, arcPoint, t * 0.5f);
-                transform.position = new Vector3(transform.position.x, Mathf.Lerp(jumpPeakHeight, targetY, t), transform.position.z);
-            }
-
             yield return null;
         }
 
-        transform.position = targetPosition; // Ensure correct landing position
+        // Ensure correct landing position
+        transform.position = targetPos;
+
         pathIndex++;
+        currentNode = targetNode;
 
         if (pathIndex < path.Count)
         {
-            yield return new WaitForSeconds(0.1f); // Prevent immediate re-triggering
-            StartCoroutine(MoveToTile(path[pathIndex])); //  Chain the next movement step
+            currentNode = path[pathIndex];
+            //StartCoroutine(MoveToTile(path[pathIndex])); //  Start the next step directly inside this coroutine
+            float currentAltitude = currentNode.altitude;
+            float targetAltitude = targetNode.altitude;
 
+            Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
-
-
+            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
+            {
+                Debug.Log("Height difference detected!");
+                StartCoroutine(PerformJump(path[pathIndex])); // Trigger jump
+            }
+            else
+            {
+                StartCoroutine(MoveToTile(path[pathIndex])); // Normal movement
+            }
         }
         else
         {
-            isMoving = false;
+            isMoving = false; //  Only reset when fully finished
+            currentNode = targetNode;
         }
     }
-    
+
+
+
+
 
 
 
     private IEnumerator MoveToTile(Node targetNode)
     {
         float tileHeight = targetNode.tileObject.transform.localScale.y;
-        float targetY = targetNode.tileObject.transform.position.y + (tileHeight / 2f) + 0.5f;
+        float targetY = targetNode.tileObject.transform.position.y + placementOffset;
         Vector3 targetPosition = new Vector3(targetNode.x, targetY, targetNode.y);
 
         float moveDuration = 0.3f;
@@ -155,11 +171,27 @@ public class CharacterController : MonoBehaviour
 
         if (pathIndex < path.Count)
         {
-            StartCoroutine(MoveToTile(path[pathIndex])); //  Start the next step directly inside this coroutine
+            currentNode = path[pathIndex];
+
+            float currentAltitude = currentNode.altitude;
+            float targetAltitude = targetNode.altitude;
+
+            Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
+
+            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
+            {
+                Debug.Log("Height difference detected!");
+                StartCoroutine(PerformJump(path[pathIndex])); // Trigger jump
+            }
+            else
+            {
+                StartCoroutine(MoveToTile(path[pathIndex])); // Normal movement
+            }
         }
         else
         {
             isMoving = false; //  Only reset when fully finished
+            currentNode = targetNode;
         }
     }
 

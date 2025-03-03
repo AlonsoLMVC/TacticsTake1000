@@ -156,6 +156,7 @@ MonoBehaviour:
   cellSize: 1
   tilePrefab: {fileID: 3350053235660555996, guid: c7ba34567d949fa448d4447f370d2c89, type: 3}
   characterPrefab: {fileID: 8541402523924272694, guid: a99547bf889d3df41a5a9c7398b31a32, type: 3}
+  cubePrefab: {fileID: 7224841674978921485, guid: 38523fbaaf39c684095fd949118fe68a, type: 3}
   pathfinding: {fileID: 1037937289}
 --- !u!4 &1580086
 Transform:
@@ -279,7 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   zoomSpeed: 10
-  rotationSpeed: 100
+  rotationSpeed: 0
   gridWidth: 10
   gridHeight: 10
 --- !u!1 &1037937288

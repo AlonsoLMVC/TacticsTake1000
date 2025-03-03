@@ -1,4 +1,7 @@
 using UnityEngine;
+
+
+//if I make it a monobehaviour things break at the moment.
 public class Node
 {
     public int x, y; // Grid position

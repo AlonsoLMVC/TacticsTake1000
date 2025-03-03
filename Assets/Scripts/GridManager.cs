@@ -14,6 +14,7 @@ public class GridManager : MonoBehaviour
     public GameObject characterPrefab; // Assign in the Inspector
     private GameObject characterInstance;
     private CharacterController characterScript;
+    public GameObject cubePrefab;
 
     private void Start()
     {
@@ -46,13 +47,16 @@ public class GridManager : MonoBehaviour
 
         float tileHeight = spawnTile.tileObject.transform.localScale.y; // Get the cube's height
         float characterHeight = 1f; // Change this based on your character's height
-        float spawnY = spawnTile.tileObject.transform.position.y + (tileHeight / 2f) + (characterHeight / 2f); //  Adjust for tile & character height
+        float placementOffset = (tileHeight / 2f) + (characterHeight / 2f); //  Adjust for tile & character height
 
-        Vector3 spawnPosition = new Vector3(spawnTile.x, spawnY, spawnTile.y); // XZ plane with correct Y height
+        Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y +  placementOffset, spawnTile.y); // XZ plane with correct Y height
 
         // Instantiate the character
         characterInstance = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);
         characterScript = characterInstance.GetComponent<CharacterController>();
+
+        characterScript.currentNode = spawnTile;
+        characterScript.placementOffset = placementOffset;
     }
 
 
@@ -60,7 +64,8 @@ public class GridManager : MonoBehaviour
 
 
 
-
+    /*
+     * this method uses scaled cubes to generate the field, which is making certain calculations more difficult.
     void GenerateGrid()
     {
         grid = new Node[width, height];
@@ -89,7 +94,52 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+    */
 
+
+    void GenerateGrid()
+    {
+        grid = new Node[width, height];
+
+        float offsetX = Random.Range(0f, 100f);
+        float offsetY = Random.Range(0f, 100f);
+
+        float baseHeight = 0f; // Base height of each cube
+        float cubeHeight = 0.5f; // Individual cube prefab height
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                float noiseValue = Mathf.PerlinNoise((x + offsetX) * 0.1f, (y + offsetY) * 0.1f);
+                int altitude = Mathf.RoundToInt(noiseValue * 10); // Determines number of stacked cubes
+
+                GameObject topCube = null;
+
+                for (int i = 0; i < altitude; i++)
+                {
+                    float yPos = (i * cubeHeight) + (cubeHeight / 2f); // Centers cube on Y
+
+                    Vector3 position = new Vector3(x, yPos, y);
+                    GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity);
+
+                    cube.name = $"Cube {x},{y},{i}";
+
+                    // Store the top cube only
+                    if (i == altitude - 1)
+                    {
+                        topCube = cube;
+                    }
+                }
+
+                // Add only the top cube to the grid
+                if (topCube != null)
+                {
+                    grid[x, y] = new Node(x, y, true, topCube, altitude);
+                }
+            }
+        }
+    }
 
 
 
@@ -158,6 +208,7 @@ public class GridManager : MonoBehaviour
         }
         else if (Input.GetMouseButtonDown(1)) // Right Click to move
         {
+            
             HandleCharacterMovement();
         }
         else if (Input.GetKeyDown(KeyCode.R)) // Reset scene
@@ -177,6 +228,7 @@ public class GridManager : MonoBehaviour
         if (Physics.Raycast(ray, out hit)) // Use Raycast to detect the clicked tile
         {
             GameObject clickedObject = hit.collider.gameObject;
+            
 
             foreach (Node node in grid)
             {
