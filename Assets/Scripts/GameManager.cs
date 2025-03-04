@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
     private PlayerController characterScript;
     public GameObject cubePrefab;
 
+    public GameObject UIManager;
+
     private void Start()
     {
         GenerateGrid();
@@ -51,18 +53,122 @@ public class GameManager : MonoBehaviour
             cameraController.gridHeight = height;
         }
 
+        
         currentState = GameState.MenuNav;
 
     }
 
+    private void Update()
+    {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
-    public void setState(GameState newState){
+        if (currentState == GameState.MoveSelect && Input.GetMouseButtonDown(0)) // Left Click for obstacles
+        {
+            MoveToClickedHighlightedTile();
+        }
+        else if (Input.GetKeyDown(KeyCode.R)) // Reset scene
+        {
+            ReloadScene();
+        }
+    }
 
-        
+
+    public void ChangeState(GameState newState)
+    {
+        if (currentState == newState) return; // Prevent redundant state changes
+
+        // Exit logic for current state
+        OnExitState(currentState);
+
+        // Set the new state
+        currentState = newState;
+        Debug.Log($"State changed to: {newState}");
+
+        // Enter logic for new state
+        OnEnterState(newState);
+    }
+
+    private void OnExitState(GameState state)
+    {
+        // Turn off UI elements when leaving a state
+        switch (state)
+        {
+            case GameState.MenuNav:
+                //menuUI.SetActive(false);
+                UIManager.GetComponent<UIManager>().setActionPanelActive(false);
+                UIManager.GetComponent<UIManager>().setMainPanelActive(false);
+                break;
+            case GameState.MoveSelect:
+                //moveSelectionUI.SetActive(false);
+                break;
+            case GameState.DirectionSelect:
+                //directionUI.SetActive(false);
+                break;
+            case GameState.ChooseTarget:
+                //attackTargetUI.SetActive(false);
+                break;
+            case GameState.PreviewAttack:
+                //attackPreviewUI.SetActive(false);
+                break;
+            case GameState.InAction:
+                //actionExecutionUI.SetActive(false);
+                break;
+        }
+    }
+
+    private void OnEnterState(GameState state)
+    {
+        // Activate necessary UI elements when entering a new state
+        switch (state)
+        {
+            case GameState.MenuNav:
+                //menuUI.SetActive(true);
+                currentState = GameState.MenuNav;
+                break;
+            case GameState.MoveSelect:
+                //moveSelectionUI.SetActive(true);
+                currentState = GameState.MoveSelect;
+
+                break;
+            case GameState.DirectionSelect:
+                //directionUI.SetActive(true);
+                currentState = GameState.DirectionSelect;
+
+
+                break;
+            case GameState.ChooseTarget:
+                //attackTargetUI.SetActive(true);
+                currentState = GameState.ChooseTarget;
+
+                break;
+            case GameState.PreviewAttack:
+                //attackPreviewUI.SetActive(true);
+                currentState = GameState.PreviewAttack;
+
+                break;
+            case GameState.InAction:
+                //actionExecutionUI.SetActive(true);
+                currentState = GameState.InAction;
+
+                ExecuteAction();
+                break;
+        }
+    }
 
 
 
+    private void ExecuteAction()
+    {
+        Debug.Log("Executing action...");
 
+        // You can add animations, attack calculations, and transition to the next state
+        Invoke(nameof(FinishAction), 1.5f); // Simulate action duration
+    }
+
+    private void FinishAction()
+    {
+        Debug.Log("Action completed! Returning to menu navigation.");
+        ChangeState(GameState.MenuNav);
     }
 
 
@@ -183,11 +289,17 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void OnMoveButtonClicked()
+    {
+        highlightSurroundingTiles();
+        ChangeState(GameState.MoveSelect);
+
+
+    }
 
 
 
-
-    void HandleClick()
+    void MoveToClickedHighlightedTile()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -278,19 +390,7 @@ public class GameManager : MonoBehaviour
     public Pathfinding pathfinding;
     private Node startNode, goalNode;
 
-    private void Update()
-    {
-        if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        if (Input.GetMouseButtonDown(0)) // Left Click for obstacles
-        {
-            HandleClick();
-        }
-        else if (Input.GetKeyDown(KeyCode.R)) // Reset scene
-        {
-            ReloadScene();
-        }
-    }
 
     void MoveCharacterToNode(Node targetNode)
     {

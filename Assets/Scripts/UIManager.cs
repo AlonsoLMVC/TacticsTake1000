@@ -6,7 +6,7 @@ public class UIManager : MonoBehaviour
     public GameObject actionPanel; // Assign in the Unity Editor
 
     // Toggles the visibility of the Main Panel
-    public void ToggleMainPanel(bool isActive)
+    public void setMainPanelActive(bool isActive)
     {
         if (mainPanel != null)
         {
@@ -15,11 +15,13 @@ public class UIManager : MonoBehaviour
     }
 
     // Toggles the visibility of the Action Panel
-    public void ToggleActionPanel(bool isActive)
+    public void setActionPanelActive(bool isActive)
     {
         if (actionPanel != null)
         {
             actionPanel.SetActive(isActive);
         }
     }
+
+
 }

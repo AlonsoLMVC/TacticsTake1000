@@ -40,6 +40,21 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    private void Update()
+    {
+        if (isMoving && path != null && pathIndex < path.Count)
+        {
+            MoveAlongPath();
+        }
+        // Print enlarged sphere position when Spacebar is pressed
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            updateSpriteWithBlendTreeVector();
+        }
+    }
+
+
+
     public void SetPath(List<Node> newPath)
     {
         
@@ -66,18 +81,7 @@ public class PlayerController : MonoBehaviour
 
 
 
-    private void Update()
-    {
-        if (isMoving && path != null && pathIndex < path.Count)
-        {
-            MoveAlongPath();
-        }
-        // Print enlarged sphere position when Spacebar is pressed
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            updateSpriteWithBlendTreeVector();
-        }
-    }
+
 
     private void MoveAlongPath()
     {
