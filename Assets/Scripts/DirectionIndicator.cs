@@ -44,12 +44,41 @@ public class DirectionIndicator : MonoBehaviour
                 sphere.transform.localScale = Vector3.one * defaultScale;
             }
         }
+
+
+        
     }
 
     public Transform GetCurrentEnlargedSphere()
     {
         return currentEnlargedSphere != null ? currentEnlargedSphere.transform : null;
     }
+
+
+
+
+    // Logs the X, Z location of the enlarged sphere
+    public Vector2 getEnlargedSpherePosition()
+    {
+        if (currentEnlargedSphere != null)
+        {
+            Vector3 pos = transform.InverseTransformPoint(currentEnlargedSphere.transform.position);
+            Debug.Log($"Enlarged Sphere Position -> X: {pos.x}, Z: {pos.z}");
+
+            return new Vector2(pos.x, pos.z);
+        }
+        else
+        {
+            Debug.Log("No sphere is currently enlarged.");
+            return Vector2.zero;
+        }
+
+        
+    }
+
+
+
+
 
     // Toggles the spheres' active state
     public void ToggleSpheres(bool isActive)

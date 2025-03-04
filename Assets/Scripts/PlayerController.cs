@@ -72,6 +72,11 @@ public class PlayerController : MonoBehaviour
         {
             MoveAlongPath();
         }
+        // Print enlarged sphere position when Spacebar is pressed
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            updateSpriteWithBlendTreeVector();
+        }
     }
 
     private void MoveAlongPath()
@@ -116,6 +121,19 @@ public class PlayerController : MonoBehaviour
 
         animator.SetFloat("directionX", blendTreeValues.x);
         animator.SetFloat("directionZ", blendTreeValues.y);
+    }
+
+    public void updateSpriteWithBlendTreeVector()
+    {
+        Vector2 rawValues = GetComponentInChildren<DirectionIndicator>().getEnlargedSpherePosition();
+
+        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(rawValues);
+
+
+        animator.SetFloat("directionX", blendTreeValues.x);
+        animator.SetFloat("directionZ", blendTreeValues.y);
+
+
     }
 
 

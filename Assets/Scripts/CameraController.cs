@@ -113,25 +113,25 @@ public class CameraController : MonoBehaviour
 
         if (isRotating)
         {
-            Debug.Log("Rotating");
+            //Debug.Log("Rotating");
             float step = rotationSpeed * Time.deltaTime;
             float newAngle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, step);
             transform.RotateAround(gridCenter, Vector3.up, newAngle - transform.eulerAngles.y);
 
-            Debug.Log($"newAngle: {newAngle}, halfwayAngle: {halfwayAngle}, Difference: {Mathf.Abs(newAngle - halfwayAngle)}");
+           // Debug.Log($"newAngle: {newAngle}, halfwayAngle: {halfwayAngle}, Difference: {Mathf.Abs(newAngle - halfwayAngle)}");
 
             // Check if we've reached the halfway point and trigger logic
             if (!hasTriggeredHalfway && Mathf.Abs(newAngle - halfwayAngle) < 2f)
             {
                 hasTriggeredHalfway = true; // Prevent duplicate calls
 
-                Debug.Log("we get in HERE");
+               // Debug.Log("we get in HERE");
 
                 if (targetAngle > transform.eulerAngles.y) // Clockwise
                 {
 
 
-                    Debug.Log("halfway");
+                    //Debug.Log("halfway");
 
                     compass.GetComponent<Compass>().compassShiftCounterClockwise();
                     playerController = GameObject.FindAnyObjectByType<PlayerController>();
@@ -143,7 +143,7 @@ public class CameraController : MonoBehaviour
                 else // Counterclockwise
                 {
 
-                    Debug.Log("halfway");
+                    //Debug.Log("halfway");
 
                     compass.GetComponent<Compass>().compassShiftClockwise();
                     playerController = GameObject.FindAnyObjectByType<PlayerController>();
@@ -158,7 +158,7 @@ public class CameraController : MonoBehaviour
             {
                 transform.eulerAngles = new Vector3(transform.eulerAngles.x, targetAngle, transform.eulerAngles.z);
                 isRotating = false;
-                Debug.Log("Done rotating");
+                //Debug.Log("Done rotating");
             }
         }
     }
