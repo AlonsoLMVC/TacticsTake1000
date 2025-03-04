@@ -18,6 +18,20 @@ public class PlayerController : MonoBehaviour
     public float placementOffset;
     public GameObject compass;
 
+    private Vector3 moveDirection;
+
+    private Animator animator;
+
+
+    private void Start()
+    {
+        animator = GetComponentInChildren<Animator>(); // Ensure the Animator is on a child GameObject
+
+        // Set default animation parameters
+        animator.SetFloat("directionX", 0);
+        animator.SetFloat("directionZ", 1);
+    }
+
 
     public void SetPath(List<Node> newPath)
     {
@@ -98,6 +112,14 @@ public class PlayerController : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 targetPos = new Vector3(targetNode.tileObject.transform.position.x, targetNode.tileObject.transform.position.y + placementOffset, targetNode.tileObject.transform.position.z);
 
+        // Update move direction
+        moveDirection = (targetPos - startPos).normalized;
+
+        // Set animation parameters
+        animator.SetFloat("directionX", moveDirection.x);
+        animator.SetFloat("directionZ", moveDirection.z);
+
+
         float jumpDuration = 0.4f;
         float elapsedTime = 0f;
 
@@ -153,6 +175,9 @@ public class PlayerController : MonoBehaviour
         else
         {
             isMoving = false; //  Only reset when fully finished
+
+            
+
             currentNode = targetNode;
             GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
         }
@@ -169,6 +194,14 @@ public class PlayerController : MonoBehaviour
         float tileHeight = targetNode.tileObject.transform.localScale.y;
         float targetY = targetNode.tileObject.transform.position.y + placementOffset;
         Vector3 targetPosition = new Vector3(targetNode.x, targetY, targetNode.y);
+
+        moveDirection = (targetPosition - transform.position).normalized;
+
+        // Set animation parameters
+        animator.SetFloat("directionX", moveDirection.x);
+        animator.SetFloat("directionZ", moveDirection.z);
+
+
 
         float moveDuration = 0.2f;
         float elapsedTime = 0f;
@@ -207,6 +240,9 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
             currentNode = targetNode;
+
+            
+
             GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
 
         }
