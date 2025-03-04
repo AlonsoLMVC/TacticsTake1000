@@ -224,7 +224,7 @@ public class GameManager : MonoBehaviour
 
         List<Node> list = new List<Node>();
         list.Add(cc.currentNode);
-        Debug.Log(cc.currentNode);
+        //Debug.Log(cc.currentNode);
         list = getSurroundingNodes(cc.move, list);
 
 

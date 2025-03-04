@@ -1,63 +1,95 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class ClosestSphereScaler : MonoBehaviour
+public class Compass : MonoBehaviour
 {
-    public GameObject[] spheres; // Assign the spheres in the Unity Editor
-    public float defaultScale = 1f;
-    public float enlargedScale = 2f;
-    private GameObject currentEnlargedSphere;
-    private bool spheresActive = true; // Tracks whether spheres are active
+    // Start is called before the first frame update
 
-    void Update()
-    {
-        if (!spheresActive || spheres.Length == 0) return;
+    public Vector2 blendTreeNE;
+    public Vector2 blendTreeSE;
+    public Vector2 blendTreeSW;
+    public Vector2 blendTreeNW;
 
-        GameObject closestSphere = null;
-        float closestDistance = float.MaxValue;
+    public Vector2 NE;
+    public Vector2 SE;
+    public Vector2 SW;
+    public Vector2 NW;
 
-        Vector3 mousePosition = Input.mousePosition;
 
-        foreach (GameObject sphere in spheres)
-        {
-            if (!sphere.activeSelf) continue;
+    void Start()
+    {   
+        blendTreeNE = new Vector2(1, 0);
+        blendTreeSE = new Vector2(0, -1);
+        blendTreeSW = new Vector2(-1, 0);
+        blendTreeNW = new Vector2(0, 1);
 
-            Vector3 screenPosition = Camera.main.WorldToScreenPoint(sphere.transform.position);
-            float distance = Vector2.Distance(new Vector2(mousePosition.x, mousePosition.y), new Vector2(screenPosition.x, screenPosition.y));
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestSphere = sphere;
-            }
-        }
-
-        currentEnlargedSphere = closestSphere;
-
-        foreach (GameObject sphere in spheres)
-        {
-            if (sphere == closestSphere)
-            {
-                sphere.transform.localScale = Vector3.one * enlargedScale;
-            }
-            else
-            {
-                sphere.transform.localScale = Vector3.one * defaultScale;
-            }
-        }
+        NE = new Vector2(1, 0);
+        SE = new Vector2(0, -1);
+        SW = new Vector2(-1, 0);
+        NW = new Vector2(0, 1);
     }
 
-    public Transform GetCurrentEnlargedSphere()
+    
+    public void compassShiftClockwise()
     {
-        return currentEnlargedSphere != null ? currentEnlargedSphere.transform : null;
+        Debug.Log("compass shift clockwise");
+        Vector2 oldNE = NE;
+        Vector2 oldSE = SE;
+        Vector2 oldSW = SW;
+        Vector2 oldNW = NW;
+
+        NE = oldNW;
+        SW = oldSE;
+        NW = oldSW;
+        SE = oldNE;
     }
 
-    // Toggles the spheres' active state
-    public void ToggleSpheres(bool isActive)
+    public void compassShiftCounterClockwise()
     {
-        spheresActive = isActive;
-        foreach (GameObject sphere in spheres)
-        {
-            sphere.SetActive(isActive);
-        }
+        Debug.Log("compass shift counter clockwise");
+
+        Vector2 oldNE = NE;
+        Vector2 oldSE = SE;
+        Vector2 oldSW = SW;
+        Vector2 oldNW = NW;
+
+        NE = oldSE;
+        SW = oldNW;
+        NW = oldNE;
+        SE = oldSW;
     }
+
+    public Vector2 convertDirectionToBlendTreeDirection(Vector2 direction)
+    {
+        Debug.Log("The direction being sent is " + direction);
+        if (direction == NE)
+        {
+            Debug.Log("Right now that corresponds to NE");
+            return blendTreeNE;
+        }
+        else if (direction == NW)
+        {
+            Debug.Log("Right now that corresponds to NW");
+            return blendTreeNW;
+        }
+        else if (direction == SW)
+        {
+            Debug.Log("Right now that corresponds to SW");
+            return blendTreeSW;
+        }
+        else if (direction == SE)
+        {
+            Debug.Log("Right now that corresponds to SE");
+            return blendTreeSE;
+        }
+        else {
+            Debug.Log("No match! This should never happen.");
+            return Vector2.zero;
+        }
+
+
+    }
+
+
 }

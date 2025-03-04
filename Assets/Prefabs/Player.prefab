@@ -707,7 +707,7 @@ GameObject:
   - component: {fileID: 1399235213977555043}
   - component: {fileID: 3451843540378361132}
   m_Layer: 0
-  m_Name: Compass
+  m_Name: DirectionIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

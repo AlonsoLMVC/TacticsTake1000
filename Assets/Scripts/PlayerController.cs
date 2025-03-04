@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,20 +17,26 @@ public class PlayerController : MonoBehaviour
     public int move = 4;
 
     public float placementOffset;
-    public GameObject compass;
+    public Compass compass;
 
     private Vector3 moveDirection;
 
     private Animator animator;
 
+    private Vector2 directionFacing;
+
+
 
     private void Start()
     {
         animator = GetComponentInChildren<Animator>(); // Ensure the Animator is on a child GameObject
+        compass = GameObject.FindAnyObjectByType<Compass>();
 
         // Set default animation parameters
         animator.SetFloat("directionX", 0);
         animator.SetFloat("directionZ", 1);
+
+        directionFacing = new Vector2(0, 1);
     }
 
 
@@ -102,7 +109,14 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    public void updateSpriteRotation()
+    {
+        Debug.Log("Trying to update sprite rotation");
+        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(directionFacing);
 
+        animator.SetFloat("directionX", blendTreeValues.x);
+        animator.SetFloat("directionZ", blendTreeValues.y);
+    }
 
 
     private IEnumerator PerformJump(Node targetNode)
@@ -115,9 +129,15 @@ public class PlayerController : MonoBehaviour
         // Update move direction
         moveDirection = (targetPos - startPos).normalized;
 
-        // Set animation parameters
-        animator.SetFloat("directionX", moveDirection.x);
-        animator.SetFloat("directionZ", moveDirection.z);
+        // Set animation parameters and take into account any kind of camera and compass rotation
+        Vector2 xzDir = new Vector2((float)Math.Round(moveDirection.x), (float)Math.Round(moveDirection.z));
+        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(xzDir);
+        Debug.Log(xzDir.ToString());
+
+        directionFacing = xzDir;
+
+        animator.SetFloat("directionX", blendTreeValues.x);
+        animator.SetFloat("directionZ", blendTreeValues.y);
 
 
         float jumpDuration = 0.4f;
@@ -197,9 +217,15 @@ public class PlayerController : MonoBehaviour
 
         moveDirection = (targetPosition - transform.position).normalized;
 
-        // Set animation parameters
-        animator.SetFloat("directionX", moveDirection.x);
-        animator.SetFloat("directionZ", moveDirection.z);
+        // Set animation parameters and take into account any kind of camera and compass rotation
+        Vector2 xzDir = new Vector2((float)Math.Round(moveDirection.x), (float)Math.Round(moveDirection.z));
+        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(xzDir);
+        Debug.Log(xzDir.ToString());
+
+        directionFacing = xzDir;
+
+        animator.SetFloat("directionX", blendTreeValues.x);
+        animator.SetFloat("directionZ", blendTreeValues.y);
 
 
 
@@ -224,11 +250,11 @@ public class PlayerController : MonoBehaviour
             float currentAltitude = currentNode.altitude;
             float targetAltitude = targetNode.altitude;
 
-            Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
+            //Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
             if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
             {
-                Debug.Log("Height difference detected!");
+                //Debug.Log("Height difference detected!");
                 StartCoroutine(PerformJump(path[pathIndex])); // Trigger jump
             }
             else
