@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     public int move = 4;
 
     public float placementOffset;
-    public Compass compass;
+    public DirectionIndicator directionIndicator;
 
     private Vector3 moveDirection;
 
@@ -25,12 +25,17 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 directionFacing;
 
+    private Compass compass;
+
+    private GameManager gameManager;
+
 
 
     private void Start()
     {
         animator = GetComponentInChildren<Animator>(); // Ensure the Animator is on a child GameObject
         compass = GameObject.FindAnyObjectByType<Compass>();
+        gameManager = GameObject.FindAnyObjectByType<GameManager>();
 
         // Set default animation parameters
         animator.SetFloat("directionX", 0);
@@ -70,11 +75,12 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void SetCompassActive(bool isActive)
+    public void SetDirectionIndicatorActive(bool isActive)
     {
-        if (compass != null)
+        //Debug.Log("setting direction indicator to " + isActive);
+        if (directionIndicator != null)
         {
-            compass.gameObject.SetActive(isActive);
+            directionIndicator.gameObject.SetActive(isActive);
         }
     }
 
@@ -91,8 +97,11 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!isMoving) // Only start if not already moving
+
+        if (!isMoving && gameManager.currentState == GameManager.GameState.MoveSelect) // Only start if not already moving
         {
+            
+            gameManager.ChangeState(GameManager.GameState.InAction);
             isMoving = true;
 
             
@@ -103,11 +112,11 @@ public class PlayerController : MonoBehaviour
             float currentAltitude = currentNode.altitude;
             float targetAltitude = targetNode.altitude;
 
-            Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
+            //Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
             if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
             {
-                Debug.Log("Height difference detected!");
+                //Debug.Log("Height difference detected!");
                 StartCoroutine(PerformJump(targetNode)); // Trigger jump
             }
             else
@@ -133,10 +142,11 @@ public class PlayerController : MonoBehaviour
 
         Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(rawValues);
 
-
+        
         animator.SetFloat("directionX", blendTreeValues.x);
         animator.SetFloat("directionZ", blendTreeValues.y);
 
+        directionFacing = rawValues;
 
     }
 
@@ -202,11 +212,11 @@ public class PlayerController : MonoBehaviour
             float currentAltitude = currentNode.altitude;
             float targetAltitude = targetNode.altitude;
 
-            Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
+            //Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
             if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
             {
-                Debug.Log("Height difference detected!");
+                //Debug.Log("Height difference detected!");
                 StartCoroutine(PerformJump(path[pathIndex])); // Trigger jump
             }
             else
@@ -218,10 +228,10 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
 
-            
+            gameManager.ChangeState(GameManager.GameState.DirectionSelect);
 
             currentNode = targetNode;
-            GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
+            gameManager.clearHighlightedTiles();
         }
     }
 
@@ -242,7 +252,7 @@ public class PlayerController : MonoBehaviour
         // Set animation parameters and take into account any kind of camera and compass rotation
         Vector2 xzDir = new Vector2((float)Math.Round(moveDirection.x), (float)Math.Round(moveDirection.z));
         Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(xzDir);
-        Debug.Log(xzDir.ToString());
+        //Debug.Log(xzDir.ToString());
 
         directionFacing = xzDir;
 
@@ -289,7 +299,7 @@ public class PlayerController : MonoBehaviour
             isMoving = false; //  Only reset when fully finished
             currentNode = targetNode;
 
-            
+            gameManager.ChangeState(GameManager.GameState.DirectionSelect);
 
             GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
 

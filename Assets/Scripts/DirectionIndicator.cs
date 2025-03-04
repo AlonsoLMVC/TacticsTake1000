@@ -8,6 +8,8 @@ public class DirectionIndicator : MonoBehaviour
     private GameObject currentEnlargedSphere;
     private bool spheresActive = true; // Tracks whether spheres are active
 
+    public GameObject player;
+
     void Update()
     {
         if (!spheresActive || spheres.Length == 0) return;
@@ -38,10 +40,13 @@ public class DirectionIndicator : MonoBehaviour
             if (sphere == closestSphere)
             {
                 sphere.transform.localScale = Vector3.one * enlargedScale;
+                player.GetComponent<PlayerController>().updateSpriteWithBlendTreeVector();
             }
             else
             {
                 sphere.transform.localScale = Vector3.one * defaultScale;
+                player.GetComponent<PlayerController>().updateSpriteWithBlendTreeVector();
+
             }
         }
 
@@ -63,7 +68,7 @@ public class DirectionIndicator : MonoBehaviour
         if (currentEnlargedSphere != null)
         {
             Vector3 pos = transform.InverseTransformPoint(currentEnlargedSphere.transform.position);
-            Debug.Log($"Enlarged Sphere Position -> X: {pos.x}, Z: {pos.z}");
+            //Debug.Log($"Enlarged Sphere Position -> X: {pos.x}, Z: {pos.z}");
 
             return new Vector2(pos.x, pos.z);
         }

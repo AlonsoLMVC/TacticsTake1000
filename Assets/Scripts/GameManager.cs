@@ -34,8 +34,8 @@ public class GameManager : MonoBehaviour
     List<Node> highlightedNodes = new List<Node>();
 
     public GameObject characterPrefab; // Assign in the Inspector
-    private GameObject characterInstance;
-    private PlayerController characterScript;
+    private GameObject playerGameObject;
+    private PlayerController playerController;
     public GameObject cubePrefab;
 
     public GameObject UIManager;
@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
 
         
         currentState = GameState.MenuNav;
+        ChangeState(GameState.MenuNav);
 
     }
 
@@ -62,11 +63,27 @@ public class GameManager : MonoBehaviour
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        if (currentState == GameState.MoveSelect && Input.GetMouseButtonDown(0)) // Left Click for obstacles
-        {
-            MoveToClickedHighlightedTile();
+        
+
+        if(Input.GetMouseButtonDown(0)){
+
+            if (currentState == GameState.MoveSelect) // Left Click for obstacles
+            {
+                MoveToClickedHighlightedTile();
+            }
+            else if(currentState == GameState.DirectionSelect){
+                ChangeState(GameState.MenuNav);
+            }
+
+
         }
-        else if (Input.GetKeyDown(KeyCode.R)) // Reset scene
+
+
+
+
+        
+        
+        if (Input.GetKeyDown(KeyCode.R)) // Reset scene
         {
             ReloadScene();
         }
@@ -102,6 +119,7 @@ public class GameManager : MonoBehaviour
                 //moveSelectionUI.SetActive(false);
                 break;
             case GameState.DirectionSelect:
+                playerController.SetDirectionIndicatorActive(false);
                 //directionUI.SetActive(false);
                 break;
             case GameState.ChooseTarget:
@@ -123,6 +141,8 @@ public class GameManager : MonoBehaviour
         {
             case GameState.MenuNav:
                 //menuUI.SetActive(true);
+                UIManager.GetComponent<UIManager>().setActionPanelActive(true);
+                UIManager.GetComponent<UIManager>().setMainPanelActive(true);
                 currentState = GameState.MenuNav;
                 break;
             case GameState.MoveSelect:
@@ -132,6 +152,7 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.DirectionSelect:
                 //directionUI.SetActive(true);
+                playerController.SetDirectionIndicatorActive(true);
                 currentState = GameState.DirectionSelect;
 
 
@@ -150,7 +171,7 @@ public class GameManager : MonoBehaviour
                 //actionExecutionUI.SetActive(true);
                 currentState = GameState.InAction;
 
-                ExecuteAction();
+                //ExecuteAction();
                 break;
         }
     }
@@ -196,14 +217,14 @@ public class GameManager : MonoBehaviour
         Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y +  placementOffset, spawnTile.y); // XZ plane with correct Y height
 
         // Instantiate the character
-        characterInstance = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);
-        characterScript = characterInstance.GetComponent<PlayerController>();
+        playerGameObject = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);
+        playerController = playerGameObject.GetComponent<PlayerController>();
 
         Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
-        characterScript.currentNode = spawnTile;
-        characterScript.placementOffset = placementOffset;
+        playerController.currentNode = spawnTile;
+        playerController.placementOffset = placementOffset;
 
-        Camera.main.GetComponent<CameraController>().assignPlayer(characterInstance);
+        Camera.main.GetComponent<CameraController>().assignPlayer(playerGameObject);
     }
 
 
@@ -332,7 +353,7 @@ public class GameManager : MonoBehaviour
     public void highlightSurroundingTiles()
     {
         Debug.Log("click");
-        PlayerController cc = characterInstance.GetComponent<PlayerController>();
+        PlayerController cc = playerGameObject.GetComponent<PlayerController>();
 
         List<Node> list = new List<Node>();
         list.Add(cc.currentNode);
@@ -395,7 +416,7 @@ public class GameManager : MonoBehaviour
     void MoveCharacterToNode(Node targetNode)
     {
         
-        if (characterScript == null || characterScript.IsMoving) return; // Prevent movement mid-action
+        if (playerController == null || playerController.IsMoving) return; // Prevent movement mid-action
         GameObject clickedObject = targetNode.tileObject;
 
         /*
@@ -413,7 +434,7 @@ public class GameManager : MonoBehaviour
                 //if (node.tileObject == clickedObject && node.isWalkable)
                 if(targetNode.isWalkable)
                 {
-                    Vector3 characterPos = characterInstance.transform.position;
+                    Vector3 characterPos = playerGameObject.transform.position;
 
                     // Ensure movement is on the correct Y level (top of the tile)
                     float tileHeight = targetNode.tileObject.transform.localScale.y;
@@ -426,7 +447,7 @@ public class GameManager : MonoBehaviour
 
                     if (path != null)
                     {
-                        characterScript.SetPath(path);
+                        playerController.SetPath(path);
                     }
                     
                 }

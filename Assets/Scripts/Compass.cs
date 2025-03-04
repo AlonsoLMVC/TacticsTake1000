@@ -62,29 +62,29 @@ public class Compass : MonoBehaviour
 
     public Vector2 convertDirectionToBlendTreeDirection(Vector2 direction)
     {
-        Debug.Log("The direction being sent is " + direction);
+        //Debug.Log("The direction being sent is " + direction);
         if (direction == NE)
         {
-            Debug.Log("Right now that corresponds to NE");
+            //Debug.Log("Right now that corresponds to NE");
             return blendTreeNE;
         }
         else if (direction == NW)
         {
-            Debug.Log("Right now that corresponds to NW");
+            //Debug.Log("Right now that corresponds to NW");
             return blendTreeNW;
         }
         else if (direction == SW)
         {
-            Debug.Log("Right now that corresponds to SW");
+            //Debug.Log("Right now that corresponds to SW");
             return blendTreeSW;
         }
         else if (direction == SE)
         {
-            Debug.Log("Right now that corresponds to SE");
+            //Debug.Log("Right now that corresponds to SE");
             return blendTreeSE;
         }
         else {
-            Debug.Log("No match! This should never happen.");
+            //Debug.Log("No match! This should never happen.");
             return Vector2.zero;
         }
 
