@@ -21,7 +21,8 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 moveDirection;
 
-    public Animator animator;
+    public Animator mainAnimator;
+    public Animator weaponAnimator;
 
     private Vector2 directionFacing;
 
@@ -33,13 +34,14 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        animator = GetComponentInChildren<Animator>(); // Ensure the Animator is on a child GameObject
+        mainAnimator = transform.Find("Sprite").GetComponent<Animator>(); // Ensure the Animator is on a child GameObject
+        weaponAnimator = transform.Find("Weapon Sprite").GetComponent<Animator>();
         compass = GameObject.FindAnyObjectByType<Compass>();
         gameManager = GameObject.FindAnyObjectByType<GameManager>();
 
         // Set default animation parameters
-        animator.SetFloat("directionX", 0);
-        animator.SetFloat("directionZ", 1);
+        mainAnimator.SetFloat("directionX", 0);
+        mainAnimator.SetFloat("directionZ", 1);
 
         directionFacing = new Vector2(0, 1);
     }
@@ -138,8 +140,8 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Trying to update sprite rotation");
         Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(directionFacing);
 
-        animator.SetFloat("directionX", blendTreeValues.x);
-        animator.SetFloat("directionZ", blendTreeValues.y);
+        mainAnimator.SetFloat("directionX", blendTreeValues.x);
+        mainAnimator.SetFloat("directionZ", blendTreeValues.y);
     }
 
     public void updateSpriteWithBlendTreeVector()
@@ -149,8 +151,8 @@ public class PlayerController : MonoBehaviour
         Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(rawValues);
 
         
-        animator.SetFloat("directionX", blendTreeValues.x);
-        animator.SetFloat("directionZ", blendTreeValues.y);
+        mainAnimator.SetFloat("directionX", blendTreeValues.x);
+        mainAnimator.SetFloat("directionZ", blendTreeValues.y);
 
         directionFacing = rawValues;
 
@@ -174,8 +176,8 @@ public class PlayerController : MonoBehaviour
 
         directionFacing = xzDir;
 
-        animator.SetFloat("directionX", blendTreeValues.x);
-        animator.SetFloat("directionZ", blendTreeValues.y);
+        mainAnimator.SetFloat("directionX", blendTreeValues.x);
+        mainAnimator.SetFloat("directionZ", blendTreeValues.y);
 
 
         float jumpDuration = 0.4f;
@@ -262,8 +264,8 @@ public class PlayerController : MonoBehaviour
 
         directionFacing = xzDir;
 
-        animator.SetFloat("directionX", blendTreeValues.x);
-        animator.SetFloat("directionZ", blendTreeValues.y);
+        mainAnimator.SetFloat("directionX", blendTreeValues.x);
+        mainAnimator.SetFloat("directionZ", blendTreeValues.y);
 
 
 
@@ -312,17 +314,40 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private IEnumerator ExecuteAttack()
+    {
+        gameManager.clearHighlightedTiles();
+        //      yield return new WaitForSeconds(1f);
+
+        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(directionFacing);
+
+        weaponAnimator.SetFloat("directionX", blendTreeValues.x);
+        weaponAnimator.SetFloat("directionZ", blendTreeValues.y);
+
+        mainAnimator.SetTrigger("attack");
+        weaponAnimator.SetTrigger("attack");
+
+
+        //yield return new WaitForSeconds(2.5f);
+        
+
+        return null;
+    }
+
 
 
     public void attack()
     {
-        gameManager.clearHighlightedTiles();
-        animator.SetTrigger("attack");
+        gameManager.ChangeState(GameManager.GameState.InAction);
+        StartCoroutine(ExecuteAttack()); // Trigger jump
+
     }
 
     public void endAttack()
     {
-        gameManager.ChangeState(GameManager.GameState.DirectionSelect);
+        StartCoroutine(ExecuteAttack()); // Trigger jump
+
+        //gameManager.ChangeState(GameManager.GameState.DirectionSelect);
     }
 
 
