@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -21,6 +22,15 @@ public class CameraController : MonoBehaviour
     public GameObject compass;
     private PlayerController playerController;
 
+    // Variables to store the original camera position, rotation, and zoom
+    private Vector3 originalPosition;
+    private Quaternion originalRotation;
+    private float originalZoom;
+    private bool isZoomedIn = false; // Track whether we are zoomed in
+
+    private Coroutine zoomCoroutine; // To manage transitions
+
+
     private void Start()
     {
         cam = Camera.main;
@@ -35,6 +45,133 @@ public class CameraController : MonoBehaviour
         HandleMovement();
         HandleZoom();
         HandleGridRotation();
+        HandlePlayerZoom(); // New function for zooming on player
+
+    if (Input.GetKeyDown(KeyCode.C)) // Press C to center without zooming
+    {
+        CenterCameraOnPlayer();
+    }
+
+    }
+
+    // New method: Centers camera on player without zooming
+    public void CenterCameraOnPlayer()
+    {
+        if (playerTransform == null) return;
+
+        float heightOffset = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+        float distance = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+
+        Vector3 targetPosition = playerTransform.position + new Vector3(-distance, heightOffset, -distance);
+        Quaternion targetRotation = Quaternion.Euler(30, 45, 0);
+
+        // Start smooth transition but keep current zoom
+        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+        zoomCoroutine = StartCoroutine(SmoothCameraTransition(targetPosition, targetRotation, cam.orthographicSize, 0.5f));
+    }
+
+    void HandlePlayerZoom()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (!isZoomedIn)
+            {
+                // Store original camera state before zooming in
+                originalPosition = transform.position;
+                originalRotation = transform.rotation;
+                originalZoom = cam.orthographicSize;
+
+                if (playerTransform != null)
+                {
+                    float heightOffset = Mathf.Max(gridWidth, gridHeight) * 0.5f; // Closer than normal
+                    float distance = Mathf.Max(gridWidth, gridHeight) * 0.5f; // Adjust zoom distance
+
+                    Vector3 targetPosition = playerTransform.position + new Vector3(-distance, heightOffset, -distance);
+                    Quaternion targetRotation = Quaternion.Euler(30, 45, 0);
+                    float targetZoom = Mathf.Max(gridWidth, gridHeight) * 0.3f;
+
+                    // Start smooth transition
+                    if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+                    zoomCoroutine = StartCoroutine(SmoothCameraTransition(targetPosition, targetRotation, targetZoom, 0.2f));
+                }
+
+                isZoomedIn = true;
+            }
+            else
+            {
+                // Smoothly return to original position
+                if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+                zoomCoroutine = StartCoroutine(SmoothCameraTransition(originalPosition, originalRotation, originalZoom, 0.2f));
+
+                isZoomedIn = false;
+            }
+        }
+    }
+
+
+    void HandlePlayerFocus()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (!isZoomedIn)
+            {
+                // Store original camera state before zooming in
+                originalPosition = transform.position;
+                originalRotation = transform.rotation;
+                originalZoom = cam.orthographicSize;
+
+                if (playerTransform != null)
+                {
+                    float heightOffset = Mathf.Max(gridWidth, gridHeight) * 0.5f;
+                    float distance = Mathf.Max(gridWidth, gridHeight) * 0.5f;
+
+                    Vector3 targetPosition = playerTransform.position + new Vector3(-distance, heightOffset, -distance);
+                    Quaternion targetRotation = Quaternion.Euler(30, 45, 0);
+                    float targetZoom = Mathf.Max(gridWidth, gridHeight) * 0.3f;
+
+                    // Start smooth transition
+                    if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+                    zoomCoroutine = StartCoroutine(SmoothCameraTransition(targetPosition, targetRotation, targetZoom, 0.5f));
+                }
+
+                isZoomedIn = true;
+            }
+            else
+            {
+                // Smoothly return to original position
+                if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+                zoomCoroutine = StartCoroutine(SmoothCameraTransition(originalPosition, originalRotation, originalZoom, 0.5f));
+
+                isZoomedIn = false;
+            }
+        }
+    }
+
+
+
+    // Coroutine to smoothly transition between camera positions
+    IEnumerator SmoothCameraTransition(Vector3 targetPosition, Quaternion targetRotation, float targetZoom, float duration)
+    {
+        float elapsedTime = 0f;
+        Vector3 startPosition = transform.position;
+        Quaternion startRotation = transform.rotation;
+        float startZoom = cam.orthographicSize;
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+            transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+            cam.orthographicSize = Mathf.Lerp(startZoom, targetZoom, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure final values are set to avoid small floating-point errors
+        transform.position = targetPosition;
+        transform.rotation = targetRotation;
+        cam.orthographicSize = targetZoom;
     }
 
     void CalculateGridCenter()

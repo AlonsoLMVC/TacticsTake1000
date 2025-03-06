@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6514300593711333240
 Transform:
   m_ObjectHideFlags: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 1
   m_Sprite: {fileID: 48536563, guid: a9d5bd162991c16428cabc08fa9cd2df, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -449,6 +449,7 @@ GameObject:
   - component: {fileID: 6796128101842483057}
   - component: {fileID: 911649169447176811}
   - component: {fileID: 7760999696630526725}
+  - component: {fileID: 8791638391289196641}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -511,7 +512,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 1
   m_Sprite: {fileID: 693467573, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -556,6 +557,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8791638391289196641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342556718757644395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0d64a1796f4abd4abdb14f1ee9f75a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerObject: {fileID: 1442969340109133805}
 --- !u!1 &1442969340109133805
 GameObject:
   m_ObjectHideFlags: 0
@@ -606,6 +620,7 @@ MonoBehaviour:
   move: 4
   placementOffset: 0.75
   directionIndicator: {fileID: 3451843540378361132}
+  animator: {fileID: 0}
 --- !u!1 &1702879277501588620
 GameObject:
   m_ObjectHideFlags: 0

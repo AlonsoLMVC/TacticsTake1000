@@ -38,7 +38,8 @@ public class GameManager : MonoBehaviour
     private PlayerController playerController;
     public GameObject cubePrefab;
 
-    public GameObject UIManager;
+    public GameObject uiManagerObject;
+    public GameObject compassGameObject;
 
     private void Start()
     {
@@ -63,9 +64,14 @@ public class GameManager : MonoBehaviour
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        
+        if (currentState == GameState.ChooseTarget)
+        {
+            //ChangeState(GameState.InAction);
+            vocalTiles();
+            //AttackClickedHighlightTile();
+        }
 
-        if(Input.GetMouseButtonDown(0)){
+        if (Input.GetMouseButtonDown(0)){
 
             if (currentState == GameState.MoveSelect) // Left Click for obstacles
             {
@@ -73,6 +79,12 @@ public class GameManager : MonoBehaviour
             }
             else if(currentState == GameState.DirectionSelect){
                 ChangeState(GameState.MenuNav);
+            }
+            else if(currentState == GameState.ChooseTarget)
+            {
+                //ChangeState(GameState.InAction);
+                
+                AttackClickedHighlightTile();
             }
 
 
@@ -86,6 +98,35 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R)) // Reset scene
         {
             ReloadScene();
+        }
+    }
+
+    public void vocalTiles()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            GameObject hoveredObject = hit.collider.gameObject;
+
+            // Check if the hovered object is a tile
+            foreach (Node node in grid)
+            {
+                if (node.tileObject == hoveredObject)
+                {
+                    Debug.Log("Hovered node is " + node.x + ", " + node.y);
+                    Debug.Log("Current node is " + playerController.currentNode);
+
+                    Vector2 newDirectionToFace = compassGameObject.GetComponent<Compass>()
+                        .GetClosestGridDirection(playerController.currentNode.getGridCoordinates(), node.getGridCoordinates());
+
+                    playerGameObject.GetComponent<PlayerController>().setDirectionFacing(newDirectionToFace);
+                    playerGameObject.GetComponent<PlayerController>().updateSpriteRotation();
+
+                    break; // Exit loop once we find the hovered tile
+                }
+            }
         }
     }
 
@@ -112,8 +153,8 @@ public class GameManager : MonoBehaviour
         {
             case GameState.MenuNav:
                 //menuUI.SetActive(false);
-                UIManager.GetComponent<UIManager>().setActionPanelActive(false);
-                UIManager.GetComponent<UIManager>().setMainPanelActive(false);
+                uiManagerObject.GetComponent<UIManager>().setActionPanelActive(false);
+                uiManagerObject.GetComponent<UIManager>().setMainPanelActive(false);
                 break;
             case GameState.MoveSelect:
                 //moveSelectionUI.SetActive(false);
@@ -141,8 +182,8 @@ public class GameManager : MonoBehaviour
         {
             case GameState.MenuNav:
                 //menuUI.SetActive(true);
-                UIManager.GetComponent<UIManager>().setActionPanelActive(true);
-                UIManager.GetComponent<UIManager>().setMainPanelActive(true);
+                uiManagerObject.GetComponent<UIManager>().setActionPanelActive(false);
+                uiManagerObject.GetComponent<UIManager>().setMainPanelActive(true);
                 currentState = GameState.MenuNav;
                 break;
             case GameState.MoveSelect:
@@ -153,12 +194,14 @@ public class GameManager : MonoBehaviour
             case GameState.DirectionSelect:
                 //directionUI.SetActive(true);
                 playerController.SetDirectionIndicatorActive(true);
+                playerController.directionIndicator.ToggleSpheres(true);
                 currentState = GameState.DirectionSelect;
 
 
                 break;
             case GameState.ChooseTarget:
                 //attackTargetUI.SetActive(true);
+
                 currentState = GameState.ChooseTarget;
 
                 break;
@@ -232,38 +275,6 @@ public class GameManager : MonoBehaviour
 
 
 
-    /*
-     * this method uses scaled cubes to generate the field, which is making certain calculations more difficult.
-    void GenerateGrid()
-    {
-        grid = new Node[width, height];
-
-        float offsetX = Random.Range(0f, 1000f);
-        float offsetY = Random.Range(0f, 1000f);
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                float noiseValue = Mathf.PerlinNoise((x + offsetX) * 0.1f, (y + offsetY) * 0.1f);
-                int altitude = Mathf.RoundToInt(noiseValue * 10); // 0 to 10 altitude
-
-                float tileHeight = altitude * 0.5f + 0.1f; // Scale based on altitude
-                float tilePositionY = tileHeight / 2f; // Raise the cube so the base is at y=0
-
-                Vector3 position = new Vector3(x, tilePositionY, y); // XZ plane, Y based on height
-                GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                tile.transform.position = position;
-                tile.transform.localScale = new Vector3(1, tileHeight, 1); // Proper height scaling
-
-                tile.name = $"Tile {x},{y}";
-
-                grid[x, y] = new Node(x, y, true, tile, altitude);
-            }
-        }
-    }
-    */
-
 
     void GenerateGrid()
     {
@@ -312,12 +323,38 @@ public class GameManager : MonoBehaviour
 
     public void OnMoveButtonClicked()
     {
-        highlightSurroundingTiles();
+        Debug.Log("Move Button Clicked");
+
+        highlightSurroundingTiles(playerController.move);
         ChangeState(GameState.MoveSelect);
 
 
     }
 
+    public void OnActButtonClicked()
+    {
+        Debug.Log("Act Button Clicked");
+
+        uiManagerObject.GetComponent<UIManager>().setActionPanelActive(true);
+
+
+    }
+
+
+    public void OnAttackButtonClicked()
+    {
+        Debug.Log("Attack Button Clicked");
+
+
+        //honestly for now we are going to use just the surrounding tiles for possible attack tiles
+        highlightSurroundingTiles(1);
+
+        ChangeState(GameState.ChooseTarget);
+      
+
+
+
+    }
 
 
     void MoveToClickedHighlightedTile()
@@ -350,7 +387,41 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void highlightSurroundingTiles()
+    void AttackClickedHighlightTile()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            GameObject clickedObject = hit.collider.gameObject;
+
+            // Check if the clicked object is a tile
+            foreach (Node node in grid)
+            {
+                if (node.tileObject == clickedObject)
+                {
+
+
+                    if (node.isHighlighted)
+                    {
+                        playerController.attack();
+
+                    }
+
+
+                    break;
+
+                }
+            }
+        }
+    }
+
+
+
+
+
+    public void highlightSurroundingTiles(int move)
     {
         Debug.Log("click");
         PlayerController cc = playerGameObject.GetComponent<PlayerController>();
@@ -358,11 +429,14 @@ public class GameManager : MonoBehaviour
         List<Node> list = new List<Node>();
         list.Add(cc.currentNode);
         //Debug.Log(cc.currentNode);
-        list = getSurroundingNodes(cc.move, list);
+        list = getAreaAroundNodes(move, list);
 
 
         foreach (Node highlightNode in list)
         {
+            //Don't highlight the node the player is on
+            if (highlightNode == cc.currentNode) continue;
+
             highlightedNodes.Add(highlightNode);
             highlightNode.ToggleHighlight();
         }
@@ -419,40 +493,27 @@ public class GameManager : MonoBehaviour
         if (playerController == null || playerController.IsMoving) return; // Prevent movement mid-action
         GameObject clickedObject = targetNode.tileObject;
 
-        /*
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit)) // Use Raycast to detect the clicked tile
+        
+        if(targetNode.isWalkable)
         {
-            GameObject clickedObject = hit.collider.gameObject;
-            
+            Vector3 characterPos = playerGameObject.transform.position;
 
-            foreach (Node node in grid)
+            // Ensure movement is on the correct Y level (top of the tile)
+            float tileHeight = targetNode.tileObject.transform.localScale.y;
+            float targetY = targetNode.tileObject.transform.position.y + (tileHeight / 2f) + 0.5f;
+
+            List<Node> path = pathfinding.FindPath(
+                new Vector2Int(Mathf.RoundToInt(characterPos.x), Mathf.RoundToInt(characterPos.z)),
+                new Vector2Int(targetNode.x, targetNode.y)
+            );
+
+            if (path != null)
             {
-            */
-                //if (node.tileObject == clickedObject && node.isWalkable)
-                if(targetNode.isWalkable)
-                {
-                    Vector3 characterPos = playerGameObject.transform.position;
-
-                    // Ensure movement is on the correct Y level (top of the tile)
-                    float tileHeight = targetNode.tileObject.transform.localScale.y;
-                    float targetY = targetNode.tileObject.transform.position.y + (tileHeight / 2f) + 0.5f;
-
-                    List<Node> path = pathfinding.FindPath(
-                        new Vector2Int(Mathf.RoundToInt(characterPos.x), Mathf.RoundToInt(characterPos.z)),
-                        new Vector2Int(targetNode.x, targetNode.y)
-                    );
-
-                    if (path != null)
-                    {
-                        playerController.SetPath(path);
-                    }
+                playerController.SetPath(path);
+            }
                     
-                }
-            //}
-        //}
+        }
+      
     }
 
 
@@ -513,7 +574,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    List<Node> getSurroundingNodes(int moves, List<Node> tilesToBeChecked)
+    List<Node> getAreaAroundNodes(int moves, List<Node> tilesToBeChecked)
     {
         List<Node> surroundingTiles = new List<Node>(tilesToBeChecked); // Store all found tiles
         List<Node> edgeTiles = new List<Node>(tilesToBeChecked); // Tiles to be checked in the next iteration

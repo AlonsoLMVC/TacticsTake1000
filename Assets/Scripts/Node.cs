@@ -69,6 +69,11 @@ public class Node
         }
     }
 
+    public Vector2 getGridCoordinates()
+    {
+        return new Vector2(x, y);
+    }
+
 
     
     

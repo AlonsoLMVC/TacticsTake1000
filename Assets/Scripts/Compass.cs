@@ -91,5 +91,25 @@ public class Compass : MonoBehaviour
 
     }
 
+    public Vector2 GetClosestGridDirection(Vector2 currentNode, Vector2 targetNode)
+    {
+        Vector2 direction = targetNode - currentNode; // Get movement vector
+
+        // Normalize direction to determine the closest grid direction
+        Vector2 normalizedDirection = direction.normalized;
+
+        // Compare to each predefined direction and return the closest
+        float neDot = Vector2.Dot(normalizedDirection, NE);
+        float seDot = Vector2.Dot(normalizedDirection, SE);
+        float swDot = Vector2.Dot(normalizedDirection, SW);
+        float nwDot = Vector2.Dot(normalizedDirection, NW);
+
+        // Determine which direction has the highest dot product (most aligned)
+        if (neDot >= seDot && neDot >= swDot && neDot >= nwDot) return NE;
+        if (seDot >= neDot && seDot >= swDot && seDot >= nwDot) return SE;
+        if (swDot >= neDot && swDot >= seDot && swDot >= nwDot) return SW;
+        return NW;
+    }
+
 
 }

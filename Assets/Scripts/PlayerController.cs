@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 moveDirection;
 
-    private Animator animator;
+    public Animator animator;
 
     private Vector2 directionFacing;
 
@@ -59,6 +59,12 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    public void setDirectionFacing(Vector2 newDirection)
+    {
+        directionFacing = newDirection;
+    }
+
+
 
     public void SetPath(List<Node> newPath)
     {
@@ -84,7 +90,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    
 
 
 
@@ -308,9 +314,16 @@ public class PlayerController : MonoBehaviour
 
 
 
+    public void attack()
+    {
+        gameManager.clearHighlightedTiles();
+        animator.SetTrigger("attack");
+    }
 
-
-
+    public void endAttack()
+    {
+        gameManager.ChangeState(GameManager.GameState.DirectionSelect);
+    }
 
 
 
