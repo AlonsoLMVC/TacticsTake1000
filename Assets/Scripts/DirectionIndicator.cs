@@ -10,66 +10,53 @@ public class DirectionIndicator : MonoBehaviour
 
     public GameObject player;
 
-    void Update()
+    // Dictionary to map directions to spheres (optional if you want a predefined mapping)
+    private Vector2[] directions = {
+        new Vector2(1, 0),  // NE
+        new Vector2(0, -1), // SE
+        new Vector2(-1, 0), // SW
+        new Vector2(0, 1)   // NW
+    };
+
+    public void SetEnlargedSphere(Vector2 direction)
     {
-        if (!spheresActive || spheres.Length == 0) return;
+        if (spheres.Length == 0) return;
 
-        GameObject closestSphere = null;
-        float closestDistance = float.MaxValue;
-
-        Vector3 mousePosition = Input.mousePosition;
+        GameObject targetSphere = null;
+        float bestDot = -Mathf.Infinity;
 
         foreach (GameObject sphere in spheres)
         {
-            if (!sphere.activeSelf) continue;
+            Vector3 localPos = transform.InverseTransformPoint(sphere.transform.position);
+            Vector2 sphereDirection = new Vector2(localPos.x, localPos.z).normalized;
 
-            Vector3 screenPosition = Camera.main.WorldToScreenPoint(sphere.transform.position);
-            float distance = Vector2.Distance(new Vector2(mousePosition.x, mousePosition.y), new Vector2(screenPosition.x, screenPosition.y));
+            float dotProduct = Vector2.Dot(direction.normalized, sphereDirection);
 
-            if (distance < closestDistance)
+            if (dotProduct > bestDot)
             {
-                closestDistance = distance;
-                closestSphere = sphere;
+                bestDot = dotProduct;
+                targetSphere = sphere;
             }
         }
 
-        currentEnlargedSphere = closestSphere;
-
-        foreach (GameObject sphere in spheres)
-        {
-            if (sphere == closestSphere)
-            {
-                sphere.transform.localScale = Vector3.one * enlargedScale;
-                player.GetComponent<PlayerController>().updateSpriteWithBlendTreeVector();
-            }
-            else
-            {
-                sphere.transform.localScale = Vector3.one * defaultScale;
-                player.GetComponent<PlayerController>().updateSpriteWithBlendTreeVector();
-
-            }
-        }
-
+        // Update enlarged sphere
+        currentEnlargedSphere = targetSphere;
 
         
     }
 
+    // Get the currently enlarged sphere
     public Transform GetCurrentEnlargedSphere()
     {
         return currentEnlargedSphere != null ? currentEnlargedSphere.transform : null;
     }
 
-
-
-
-    // Logs the X, Z location of the enlarged sphere
-    public Vector2 getEnlargedSpherePosition()
+    // Get the X, Z position of the enlarged sphere
+    public Vector2 GetEnlargedSpherePosition()
     {
         if (currentEnlargedSphere != null)
         {
             Vector3 pos = transform.InverseTransformPoint(currentEnlargedSphere.transform.position);
-            //Debug.Log($"Enlarged Sphere Position -> X: {pos.x}, Z: {pos.z}");
-
             return new Vector2(pos.x, pos.z);
         }
         else
@@ -77,13 +64,7 @@ public class DirectionIndicator : MonoBehaviour
             Debug.Log("No sphere is currently enlarged.");
             return Vector2.zero;
         }
-
-        
     }
-
-
-
-
 
     // Toggles the spheres' active state
     public void ToggleSpheres(bool isActive)

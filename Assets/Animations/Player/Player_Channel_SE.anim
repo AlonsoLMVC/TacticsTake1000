@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Attack_SW
+  m_Name: Player_Channel_SE
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,7 +21,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -5, y: 5, z: 5}
+        value: {x: 5, y: 5, z: 5}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -29,8 +29,8 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 0.68333334
-        value: {x: -5, y: 5, z: 5}
+        time: 0.6666667
+        value: {x: 5, y: 5, z: 5}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -46,15 +46,15 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -1671440729, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
+      value: {fileID: -1748110858, guid: 84e4e6dd9f32b954d8af9682694f64b0, type: 3}
     - time: 0.16666667
-      value: {fileID: 2033562166, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
+      value: {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
     - time: 0.33333334
-      value: {fileID: -1694648420, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
+      value: {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
     - time: 0.5
-      value: {fileID: 693467573, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
+      value: {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
     - time: 0.6666667
-      value: {fileID: 693467573, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
+      value: {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -86,11 +86,11 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -1671440729, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
-    - {fileID: 2033562166, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
-    - {fileID: -1694648420, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
-    - {fileID: 693467573, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
-    - {fileID: 693467573, guid: ae4440c7097ab8544a6104f4a7a0a8e3, type: 3}
+    - {fileID: -1748110858, guid: 84e4e6dd9f32b954d8af9682694f64b0, type: 3}
+    - {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
+    - {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
+    - {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
+    - {fileID: 21300000, guid: 9db9d4cd9d4c05444a8d0462d73af2f1, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -118,7 +118,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -5
+        value: 5
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -126,8 +126,8 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.68333334
-        value: -5
+        time: 0.6666667
+        value: 5
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -156,7 +156,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.68333334
+        time: 0.6666667
         value: 5
         inSlope: 0
         outSlope: 0
@@ -186,7 +186,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.68333334
+        time: 0.6666667
         value: 5
         inSlope: 0
         outSlope: 0
@@ -205,11 +205,4 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events:
-  - time: 0.68333334
-    functionName: notifyEndOfAttack
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
+  m_Events: []
