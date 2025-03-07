@@ -272,7 +272,7 @@ public class CameraController : MonoBehaviour
 
                     compass.GetComponent<Compass>().compassShiftCounterClockwise();
                     playerController = GameObject.FindAnyObjectByType<PlayerController>();
-                    playerController.updateSpriteRotation();
+                    playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
                     
 
 
@@ -284,7 +284,7 @@ public class CameraController : MonoBehaviour
 
                     compass.GetComponent<Compass>().compassShiftClockwise();
                     playerController = GameObject.FindAnyObjectByType<PlayerController>();
-                    playerController.updateSpriteRotation();
+                    playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
 
 
 

@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        if (currentState == GameState.ChooseTarget)
+        if (currentState == GameState.ChooseTarget || currentState == GameState.MoveSelect || currentState == GameState.DirectionSelect)
         {
             //ChangeState(GameState.InAction);
             vocalTiles();
@@ -122,7 +122,9 @@ public class GameManager : MonoBehaviour
                         .GetClosestGridDirection(playerController.currentNode.getGridCoordinates(), node.getGridCoordinates());
 
                     playerGameObject.GetComponent<PlayerController>().setDirectionFacing(newDirectionToFace);
-                    playerGameObject.GetComponent<PlayerController>().updateSpriteRotation();
+                    playerGameObject.GetComponent<PlayerController>().setIndicatorDirectionFacing(newDirectionToFace);
+
+
 
                     break; // Exit loop once we find the hovered tile
                 }
@@ -268,6 +270,8 @@ public class GameManager : MonoBehaviour
         playerController.placementOffset = placementOffset;
 
         Camera.main.GetComponent<CameraController>().assignPlayer(playerGameObject);
+
+        playerController.assignStartingUnit(playerGameObject);
     }
 
 
@@ -352,6 +356,17 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.ChooseTarget);
       
 
+    }
+
+    public void OnMagicAttackButtonClicked()
+    {
+        Debug.Log("Magic Attack Button Clicked");
+
+
+        //honestly for now we are going to use just the surrounding tiles for possible attack tiles
+        highlightSurroundingTiles(3);
+
+        ChangeState(GameState.ChooseTarget);
 
 
     }
