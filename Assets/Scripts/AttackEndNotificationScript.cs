@@ -4,10 +4,28 @@ using UnityEngine;
 
 public class AttackEndNotificationScript : MonoBehaviour
 {
-    public GameObject playerObject;
+    public GameManager gm;
+
+    private void Start()        
+    {
+        gm = GameObject.FindAnyObjectByType<GameManager>();
+
+        if(gm == null)
+        {
+            Debug.Log("Game Manager is null in attack notification script.");
+        }
+        else
+        {
+            Debug.Log("Game Manager is not null in attack notification script.");
+
+        }
+    }
+
     public void notifyEndOfAttack()
     {
-        playerObject.GetComponent<PlayerController>().endAttack();
+        
+        gm.endAttack();
 
     }
 }
+

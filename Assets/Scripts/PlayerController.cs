@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
 
     public GameObject currentUnitGameObject;
 
+    public bool nextAttackIsMagic;
 
 
     private void Start()
@@ -111,7 +112,7 @@ public class PlayerController : MonoBehaviour
 
             
 
-            Vector3 currentPosition = transform.position; 
+            Vector3 currentPosition = currentUnitGameObject.transform.position; 
             Node targetNode = path[0];
 
             float currentAltitude = currentNode.altitude;
@@ -139,7 +140,7 @@ public class PlayerController : MonoBehaviour
     {
         isMoving = true;
 
-        Vector3 startPos = transform.position;
+        Vector3 startPos = currentUnitGameObject.transform.position;
         Vector3 targetPos = new Vector3(targetNode.tileObject.transform.position.x, targetNode.tileObject.transform.position.y + placementOffset, targetNode.tileObject.transform.position.z);
 
         // Update move direction
@@ -178,14 +179,14 @@ public class PlayerController : MonoBehaviour
             float heightOffset = Mathf.Sin(t * Mathf.PI) * jumpHeight; // Sinusoidal arc
 
             // **Combine horizontal and vertical movement**
-            transform.position = new Vector3(horizontalPos.x, horizontalPos.y + heightOffset, horizontalPos.z);
+            currentUnitGameObject.transform.position = new Vector3(horizontalPos.x, horizontalPos.y + heightOffset, horizontalPos.z);
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         // Ensure correct landing position
-        transform.position = targetPos;
+        currentUnitGameObject.transform.position = targetPos;
 
         pathIndex++;
         currentNode = targetNode;
@@ -232,7 +233,7 @@ public class PlayerController : MonoBehaviour
         float targetY = targetNode.tileObject.transform.position.y + placementOffset;
         Vector3 targetPosition = new Vector3(targetNode.x, targetY, targetNode.y);
 
-        moveDirection = (targetPosition - transform.position).normalized;
+        moveDirection = (targetPosition - currentUnitGameObject.transform.position).normalized;
 
         // Set animation parameters and take into account any kind of camera and compass rotation
         Vector2 xzDir = new Vector2((float)Math.Round(moveDirection.x), (float)Math.Round(moveDirection.z));
@@ -248,16 +249,16 @@ public class PlayerController : MonoBehaviour
 
         float moveDuration = 0.2f;
         float elapsedTime = 0f;
-        Vector3 startPosition = transform.position;
+        Vector3 startPosition = currentUnitGameObject.transform.position;
 
         while (elapsedTime < moveDuration)
         {
             elapsedTime += Time.deltaTime;
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveDuration);
+            currentUnitGameObject.transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveDuration);
             yield return null;
         }
 
-        transform.position = targetPosition;
+        currentUnitGameObject.transform.position = targetPosition;
         pathIndex++;
 
         if (pathIndex < path.Count)
@@ -301,8 +302,17 @@ public class PlayerController : MonoBehaviour
         currentUnitGameObject.GetComponent<Unit>().weaponAnimator.SetFloat("directionX", blendTreeValues.x);
         currentUnitGameObject.GetComponent<Unit>().weaponAnimator.SetFloat("directionZ", blendTreeValues.y);
 
-        currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetTrigger("attack");
-        currentUnitGameObject.GetComponent<Unit>().weaponAnimator.SetTrigger("attack");
+
+        if (nextAttackIsMagic == false)
+        {
+            currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetTrigger("attack");
+            currentUnitGameObject.GetComponent<Unit>().weaponAnimator.SetTrigger("attack");
+        }
+        else
+        {
+            currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetTrigger("channel");
+        }
+        
 
 
         //yield return new WaitForSeconds(2.5f);
@@ -313,6 +323,7 @@ public class PlayerController : MonoBehaviour
 
 
 
+
     public void attack()
     {
         gameManager.ChangeState(GameManager.GameState.InAction);
@@ -320,12 +331,8 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public void endAttack()
-    {
-        StartCoroutine(ExecuteAttack()); // Trigger jump
 
-        //gameManager.ChangeState(GameManager.GameState.DirectionSelect);
-    }
+
 
 
 

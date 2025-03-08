@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     List<Node> highlightedNodes = new List<Node>();
 
     public GameObject characterPrefab; // Assign in the Inspector
-    private PlayerController playerController;
+    public PlayerController playerController;
     public GameObject cubePrefab;
 
     public GameObject uiManagerObject;
@@ -114,8 +114,8 @@ public class GameManager : MonoBehaviour
             {
                 if (node.tileObject == hoveredObject)
                 {
-                    Debug.Log("Hovered node is " + node.x + ", " + node.y);
-                    Debug.Log("Current node is " + playerController.currentNode);
+                    //Debug.Log("Hovered node is " + node.x + ", " + node.y);
+                    //Debug.Log("Current node is " + playerController.currentNode);
 
                     Vector2 newDirectionToFace = compassGameObject.GetComponent<Compass>()
                         .GetClosestGridDirection(playerController.currentNode.getGridCoordinates(), node.getGridCoordinates());
@@ -262,8 +262,7 @@ public class GameManager : MonoBehaviour
         Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y +  placementOffset, spawnTile.y); // XZ plane with correct Y height
 
         // Instantiate the character
-        playerController.currentUnitGameObject = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);
-        playerController = FindAnyObjectByType<PlayerController>();
+        playerController.currentUnitGameObject = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);  
 
         Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
         playerController.currentNode = spawnTile;
@@ -354,7 +353,8 @@ public class GameManager : MonoBehaviour
         highlightSurroundingTiles(1);
 
         ChangeState(GameState.ChooseTarget);
-      
+
+        playerController.nextAttackIsMagic = false;
 
     }
 
@@ -368,6 +368,7 @@ public class GameManager : MonoBehaviour
 
         ChangeState(GameState.ChooseTarget);
 
+        playerController.nextAttackIsMagic = true;
 
     }
 
@@ -620,7 +621,11 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void endAttack()
+    {
 
+        ChangeState(GameManager.GameState.DirectionSelect);
+    }
 
 
 }
