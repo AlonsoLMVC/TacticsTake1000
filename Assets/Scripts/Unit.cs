@@ -9,6 +9,8 @@ public class Unit : MonoBehaviour
     public Vector2 Position;
     public List<AbilitySet> AbilitySets;
 
+    public bool IsAllied;
+
     public Animator mainAnimator;
     public Animator weaponAnimator;
 
@@ -64,7 +66,7 @@ public class Unit : MonoBehaviour
 
     }
 
-    public Unit(string name, int hp, int mp, int pa, int ma, int speed, int defense, int magicDefense, int moveRange)
+    public void setValues(string name, int hp, int mp, int pa, int ma, int speed, int defense, int magicDefense, int moveRange, bool isAllied)
     {
         Name = name;
         HP = hp;
@@ -78,6 +80,7 @@ public class Unit : MonoBehaviour
         CT = 0;
         Position = new Vector2(0, 0);
         AbilitySets = new List<AbilitySet>();
+        IsAllied = isAllied;
     }
 
     public void AddAbilitySet(AbilitySet abilitySet)
