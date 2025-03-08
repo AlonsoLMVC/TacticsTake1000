@@ -14,10 +14,7 @@ public class PlayerController : MonoBehaviour
 
     public Node currentNode; //  Stores the node the character is currently standing on
 
-    public int move = 4;
-
     public float placementOffset;
-    public DirectionIndicator directionIndicator;
 
     private Vector3 moveDirection;
 
@@ -61,10 +58,10 @@ public class PlayerController : MonoBehaviour
         currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
     }
 
-    public void setIndicatorDirectionFacing(Vector2 newDirection)
+ public void setIndicatorDirectionFacing(Vector2 newDirection)
     {
-        directionIndicator.SetEnlargedSphere(newDirection);
-    }
+        currentUnitGameObject.GetComponent<Unit>().directionIndicator.SetEnlargedSphere(newDirection);
+    }   
 
 
 
@@ -86,9 +83,9 @@ public class PlayerController : MonoBehaviour
     public void SetDirectionIndicatorActive(bool isActive)
     {
         //Debug.Log("setting direction indicator to " + isActive);
-        if (directionIndicator != null)
+        if (currentUnitGameObject.GetComponent<Unit>().directionIndicator != null)
         {
-            directionIndicator.gameObject.SetActive(isActive);
+            currentUnitGameObject.GetComponent<Unit>().directionIndicator.gameObject.SetActive(isActive);
         }
     }
 

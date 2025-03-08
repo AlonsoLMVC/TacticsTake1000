@@ -16,6 +16,9 @@ public class Unit : MonoBehaviour
 
     public Vector2 directionFacing;
 
+    public DirectionIndicator directionIndicator;
+
+
 
 
     private void Start()

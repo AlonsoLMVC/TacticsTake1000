@@ -579,7 +579,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1593670670703695368}
-  - component: {fileID: 3406553433059076918}
   - component: {fileID: 4162803433606313815}
   m_Layer: 0
   m_Name: Player
@@ -606,24 +605,6 @@ Transform:
   - {fileID: 34190094704292597}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3406553433059076918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1442969340109133805}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f049cb306468dac4b98915d77ce50418, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  move: 4
-  placementOffset: 0.75
-  directionIndicator: {fileID: 3451843540378361132}
-  mainAnimator: {fileID: 0}
-  weaponAnimator: {fileID: 0}
-  currentUnit: {fileID: 0}
 --- !u!114 &4162803433606313815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -644,9 +625,13 @@ MonoBehaviour:
   Speed: 0
   Defense: 0
   MagicDefense: 0
-  MoveRange: 0
+  MoveRange: 4
   CT: 0
   Position: {x: 0, y: 0}
+  mainAnimator: {fileID: 7760999696630526725}
+  weaponAnimator: {fileID: 4134306362256534403}
+  directionFacing: {x: 0, y: 0}
+  directionIndicator: {fileID: 3451843540378361132}
 --- !u!1 &1702879277501588620
 GameObject:
   m_ObjectHideFlags: 0
