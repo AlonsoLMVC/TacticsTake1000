@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     List<Node> highlightedNodes = new List<Node>();
 
-    public GameObject characterPrefab; // Assign in the Inspector
+    public GameObject unitPrefab; // Assign in the Inspector
     public PlayerController playerController;
     public GameObject cubePrefab;
 
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         GenerateGrid();
-        SpawnCharacter();
+        SpawnUnitWithJobAndAllegiance("Black Mage", true);
 
         // Pass grid size to CameraController
         CameraController cameraController = FindObjectOfType<CameraController>();
@@ -57,7 +58,17 @@ public class GameManager : MonoBehaviour
         currentState = GameState.MenuNav;
         ChangeState(GameState.MenuNav);
 
+        StartCoroutine(ExecuteAfterDelay());
+
     }
+
+    IEnumerator ExecuteAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+        playerController.setDirectionFacing(new Vector2(0, 1));
+        Debug.Log("Executed after 2 seconds");
+    }
+
 
     private void Update()
     {
@@ -240,7 +251,7 @@ public class GameManager : MonoBehaviour
 
 
 
-
+    /*
     void SpawnCharacter()
     {
         List<Node> walkableTiles = new List<Node>();
@@ -262,7 +273,7 @@ public class GameManager : MonoBehaviour
         Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y +  placementOffset, spawnTile.y); // XZ plane with correct Y height
 
         // Instantiate the character
-        playerController.currentUnitGameObject = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);  
+        playerController.currentUnitGameObject = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);  
 
         Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
         playerController.currentNode = spawnTile;
@@ -271,6 +282,41 @@ public class GameManager : MonoBehaviour
         Camera.main.GetComponent<CameraController>().assignPlayer(playerController.currentUnitGameObject );
 
         playerController.assignStartingUnit(playerController.currentUnitGameObject );
+    }
+    */
+
+    void SpawnUnitWithJobAndAllegiance(string job, bool isAllied)
+    {
+        List<Node> walkableTiles = new List<Node>();
+        foreach (Node node in grid)
+        {
+            if (node.isWalkable)
+                walkableTiles.Add(node);
+        }
+
+        if (walkableTiles.Count == 0) return;
+
+        // Pick a random walkable tile
+        Node spawnTile = walkableTiles[Random.Range(0, walkableTiles.Count)];
+
+        float tileHeight = spawnTile.tileObject.transform.localScale.y; // Get the cube's height
+        float characterHeight = 1f; // Change this based on your character's height
+        float placementOffset = (tileHeight / 2f) + (characterHeight / 2f); //  Adjust for tile & character height
+
+        Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y + placementOffset, spawnTile.y); // XZ plane with correct Y height
+
+        // Instantiate the character
+        playerController.currentUnitGameObject = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
+
+        unitPrefab.GetComponent<Unit>().setJobandAllegianceAndInitialize(job, isAllied);
+
+        Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
+        playerController.currentNode = spawnTile;
+        playerController.placementOffset = placementOffset;
+
+        Camera.main.GetComponent<CameraController>().assignPlayer(playerController.currentUnitGameObject);
+
+        playerController.assignStartingUnit(playerController.currentUnitGameObject);
     }
 
 

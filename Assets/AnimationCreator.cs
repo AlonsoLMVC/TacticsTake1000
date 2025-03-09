@@ -21,10 +21,10 @@ public class AnimationCreator : MonoBehaviour
 
     private readonly Dictionary<string, Vector3> directionScales = new Dictionary<string, Vector3>
     {
-        { "SE", new Vector3(5, 5, 5) },
-        { "SW", new Vector3(-5, 5, 5) },
-        { "NE", new Vector3(5, 5, 5) },
-        { "NW", new Vector3(-5, 5, 5) }
+        { "SE", new Vector3(-5, 5, 5) },
+        { "SW", new Vector3(5, 5, 5) },
+        { "NE", new Vector3(-5, 5, 5) },
+        { "NW", new Vector3(5, 5, 5) }
     };
 
     private readonly string[] baseAnimationNames = new string[]
@@ -152,13 +152,43 @@ public class AnimationCreator : MonoBehaviour
                 value = sprites[index]
             };
             spriteKeyframes.Add(spriteKey);
-
         }
 
+        // Set sprite animation keyframes
         AnimationUtility.SetObjectReferenceCurve(clip,
             new EditorCurveBinding { path = "", type = typeof(SpriteRenderer), propertyName = "m_Sprite" },
             spriteKeyframes.ToArray());
 
+        // ** Restore Scale Keyframes**
+        Keyframe[] scaleKeyframesX =
+        {
+        new Keyframe(0f, scale.x),
+        new Keyframe(totalTime, scale.x)
+    };
+        Keyframe[] scaleKeyframesY =
+        {
+        new Keyframe(0f, scale.y),
+        new Keyframe(totalTime, scale.y)
+    };
+        Keyframe[] scaleKeyframesZ =
+        {
+        new Keyframe(0f, scale.z),
+        new Keyframe(totalTime, scale.z)
+    };
+
+        AnimationUtility.SetEditorCurve(clip,
+            new EditorCurveBinding { path = "", type = typeof(Transform), propertyName = "m_LocalScale.x" },
+            new AnimationCurve(scaleKeyframesX));
+
+        AnimationUtility.SetEditorCurve(clip,
+            new EditorCurveBinding { path = "", type = typeof(Transform), propertyName = "m_LocalScale.y" },
+            new AnimationCurve(scaleKeyframesY));
+
+        AnimationUtility.SetEditorCurve(clip,
+            new EditorCurveBinding { path = "", type = typeof(Transform), propertyName = "m_LocalScale.z" },
+            new AnimationCurve(scaleKeyframesZ));
+
+        // Add Animation Event (if applicable)
         if (addAnimationEvent)
         {
             AnimationEvent animEvent = new AnimationEvent();
@@ -174,7 +204,10 @@ public class AnimationCreator : MonoBehaviour
 
         AssetDatabase.CreateAsset(clip, path);
         AssetDatabase.SaveAssets();
+
+        Debug.Log($" Created animation with scale keyframes: {fileName}");
     }
+
 
     private void CreateAnimatorOverrideController(string folderPath, string characterName)
     {

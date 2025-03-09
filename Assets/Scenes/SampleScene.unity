@@ -156,7 +156,7 @@ MonoBehaviour:
   height: 10
   cellSize: 1
   tilePrefab: {fileID: 3350053235660555996, guid: c7ba34567d949fa448d4447f370d2c89, type: 3}
-  characterPrefab: {fileID: 1442969340109133805, guid: f24a02dc63a345445b9a3aeb9efd19f1, type: 3}
+  unitPrefab: {fileID: 1442969340109133805, guid: f24a02dc63a345445b9a3aeb9efd19f1, type: 3}
   playerController: {fileID: 133213166}
   cubePrefab: {fileID: 7224841674978921485, guid: 38523fbaaf39c684095fd949118fe68a, type: 3}
   uiManagerObject: {fileID: 812621306}

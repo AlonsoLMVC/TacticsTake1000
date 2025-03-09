@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d9beb04c8a70fb47a9ba700cfd6d693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spritesheetFolder: Assets/Spritesheets/
+  spritesheetFolder: Assets/Resources/Spritesheets/
   frameDuration: 0.2
   baseAnimatorController: {fileID: 9100000, guid: 3bf2e8f751beab74587cd9f97b0bc47e, type: 2}
   walkFramesSE_SW: 090000000a0000000b0000000a000000

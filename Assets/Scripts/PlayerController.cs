@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
     public void assignStartingUnit(GameObject startingUnit)
     {
         currentUnitGameObject = startingUnit;
+
     }
 
 
