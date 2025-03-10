@@ -21,6 +21,7 @@ public class CameraController : MonoBehaviour
 
     public GameObject compass;
     private PlayerController playerController;
+    public GameManager gameManager;
 
     // Variables to store the original camera position, rotation, and zoom
     private Vector3 originalPosition;
@@ -270,9 +271,14 @@ public class CameraController : MonoBehaviour
 
                     //Debug.Log("halfway");
 
-                    compass.GetComponent<Compass>().compassShiftCounterClockwise();
-                    playerController = GameObject.FindAnyObjectByType<PlayerController>();
-                    playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
+                    compass.GetComponent<Compass>().compassShiftCounterClockwise();  
+
+                    foreach(Unit u in gameManager.units)
+                    {
+                        u.updateSpriteRotation();
+                    }
+                    //playerController = GameObject.FindAnyObjectByType<PlayerController>();
+                    //playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
                     
 
 
@@ -284,7 +290,7 @@ public class CameraController : MonoBehaviour
 
                     compass.GetComponent<Compass>().compassShiftClockwise();
                     playerController = GameObject.FindAnyObjectByType<PlayerController>();
-                    playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
+                    playerController.currentUnit.updateSpriteRotation();
 
 
 

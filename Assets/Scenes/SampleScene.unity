@@ -161,6 +161,7 @@ MonoBehaviour:
   cubePrefab: {fileID: 7224841674978921485, guid: 38523fbaaf39c684095fd949118fe68a, type: 3}
   uiManagerObject: {fileID: 812621306}
   compassGameObject: {fileID: 1516233212}
+  units: []
   pathfinding: {fileID: 1037937289}
 --- !u!4 &1580086
 Transform:
@@ -706,7 +707,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   placementOffset: 0
-  currentUnitGameObject: {fileID: 0}
+  currentUnit: {fileID: 0}
   nextAttackIsMagic: 0
 --- !u!4 &133213167
 Transform:
@@ -969,6 +970,7 @@ MonoBehaviour:
   gridHeight: 30
   playerTransform: {fileID: 1593670670703695368, guid: f1ca194730e8941e8bfcf3a4778dbcd5, type: 3}
   compass: {fileID: 1516233212}
+  gameManager: {fileID: 1580085}
 --- !u!1 &614772502
 GameObject:
   m_ObjectHideFlags: 0

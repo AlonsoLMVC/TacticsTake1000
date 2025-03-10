@@ -23,6 +23,8 @@ public class Unit : MonoBehaviour
 
     public bool hasActed, hasMoved;
 
+    public Node currentNode;
+
 
     private static Dictionary<string, double[]> JobGrowthRates = new Dictionary<string, double[]>()
     {

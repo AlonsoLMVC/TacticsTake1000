@@ -41,10 +41,31 @@ public class GameManager : MonoBehaviour
     public GameObject uiManagerObject;
     public GameObject compassGameObject;
 
+    public List<Unit> units;
+
     private void Start()
     {
+        units = new List<Unit>();
+
         GenerateGrid();
-        SpawnUnitWithJobAndAllegiance("Black Mage", true);
+        
+
+
+        units.Add(SpawnUnitWithJobAndAllegiance("Archer", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Black Mage", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Blue Mage", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Fighter", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Hunter", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Illusionist", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Ninja", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Paladin", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Soldier", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Thief", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("White Mage", true));
+
+        playerController.currentUnit = units[0];
+        
+
 
         // Pass grid size to CameraController
         CameraController cameraController = FindObjectOfType<CameraController>();
@@ -65,6 +86,13 @@ public class GameManager : MonoBehaviour
     IEnumerator ExecuteAfterDelay()
     {
         yield return new WaitForSeconds(1f);
+
+        foreach(Unit u in units){
+            u.directionFacing = new Vector2(0,1);
+            u.updateSpriteRotation();
+        }
+
+
         playerController.setDirectionFacing(new Vector2(0, 1));
         Debug.Log("Executed after 2 seconds");
     }
@@ -129,9 +157,9 @@ public class GameManager : MonoBehaviour
                     //Debug.Log("Current node is " + playerController.currentNode);
 
                     Vector2 newDirectionToFace = compassGameObject.GetComponent<Compass>()
-                        .GetClosestGridDirection(playerController.currentNode.getGridCoordinates(), node.getGridCoordinates());
+                        .GetClosestGridDirection(playerController.currentUnit.currentNode.getGridCoordinates(), node.getGridCoordinates());
 
-
+                    
                     playerController.setDirectionFacing(newDirectionToFace);
                     playerController.setIndicatorDirectionFacing(newDirectionToFace);
 
@@ -207,7 +235,7 @@ public class GameManager : MonoBehaviour
             case GameState.DirectionSelect:
                 //directionUI.SetActive(true);
                 playerController.SetDirectionIndicatorActive(true);
-                playerController.currentUnitGameObject.GetComponent<Unit>().directionIndicator.ToggleSpheres(true);
+                playerController.currentUnit.gameObject.GetComponent<Unit>().directionIndicator.ToggleSpheres(true);
                 currentState = GameState.DirectionSelect;
 
 
@@ -285,7 +313,7 @@ public class GameManager : MonoBehaviour
     }
     */
 
-    void SpawnUnitWithJobAndAllegiance(string job, bool isAllied)
+    Unit SpawnUnitWithJobAndAllegiance(string job, bool isAllied)
     {
         List<Node> walkableTiles = new List<Node>();
         foreach (Node node in grid)
@@ -294,7 +322,7 @@ public class GameManager : MonoBehaviour
                 walkableTiles.Add(node);
         }
 
-        if (walkableTiles.Count == 0) return;
+        if (walkableTiles.Count == 0) return null;
 
         // Pick a random walkable tile
         Node spawnTile = walkableTiles[Random.Range(0, walkableTiles.Count)];
@@ -306,17 +334,20 @@ public class GameManager : MonoBehaviour
         Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y + placementOffset, spawnTile.y); // XZ plane with correct Y height
 
         // Instantiate the character
-        playerController.currentUnitGameObject = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
+        Unit newUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity).GetComponent<Unit>();
 
-        unitPrefab.GetComponent<Unit>().setJobandAllegianceAndInitialize(job, isAllied);
+        newUnit.setJobandAllegianceAndInitialize(job, isAllied);
 
         Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
-        playerController.currentNode = spawnTile;
+        newUnit.currentNode = spawnTile;
         playerController.placementOffset = placementOffset;
 
-        Camera.main.GetComponent<CameraController>().assignPlayer(playerController.currentUnitGameObject);
+        Camera.main.GetComponent<CameraController>().assignPlayer(newUnit.gameObject);
 
-        playerController.assignStartingUnit(playerController.currentUnitGameObject);
+        playerController.assignStartingUnit(playerController.currentUnit);
+
+        return newUnit;
+
     }
 
 
@@ -374,7 +405,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Move Button Clicked");
 
-        highlightSurroundingTiles(playerController.currentUnitGameObject.GetComponent<Unit>().MoveRange);
+        highlightSurroundingTiles(playerController.currentUnit.gameObject.GetComponent<Unit>().MoveRange);
         ChangeState(GameState.MoveSelect);
 
 
@@ -489,7 +520,7 @@ public class GameManager : MonoBehaviour
         PlayerController pc = FindAnyObjectByType<PlayerController>();
 
         List<Node> list = new List<Node>();
-        list.Add(pc.currentNode);
+        list.Add(pc.currentUnit.currentNode);
         //Debug.Log(cc.currentNode);
         list = getAreaAroundNodes(move, list);
 
@@ -497,7 +528,7 @@ public class GameManager : MonoBehaviour
         foreach (Node highlightNode in list)
         {
             //Don't highlight the node the player is on
-            if (highlightNode == pc.currentNode) continue;
+            if (highlightNode == pc.currentUnit.currentNode) continue;
 
             highlightedNodes.Add(highlightNode);
             highlightNode.ToggleHighlight();
@@ -558,7 +589,7 @@ public class GameManager : MonoBehaviour
         
         if(targetNode.isWalkable)
         {
-            Vector3 characterPos = playerController.currentUnitGameObject.transform.position;
+            Vector3 characterPos = playerController.currentUnit.gameObject.transform.position;
 
             // Ensure movement is on the correct Y level (top of the tile)
             float tileHeight = targetNode.tileObject.transform.localScale.y;
