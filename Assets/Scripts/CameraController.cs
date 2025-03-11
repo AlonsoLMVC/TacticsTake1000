@@ -196,7 +196,7 @@ public class CameraController : MonoBehaviour
         // Adjust orthographic size dynamically for better zoom level
         cam.orthographicSize = Mathf.Max(gridWidth, gridHeight) * 0.65f;
 
-        // Set correct Final Fantasy Tactics camera angle (30Åã tilt, 45Åã initial rotation)
+        // Set correct Final Fantasy Tactics camera angle (30ÔøΩÔøΩ tilt, 45ÔøΩÔøΩ initial rotation)
         transform.rotation = Quaternion.Euler(30, 45, 0);
     }
 
@@ -289,8 +289,14 @@ public class CameraController : MonoBehaviour
                     //Debug.Log("halfway");
 
                     compass.GetComponent<Compass>().compassShiftClockwise();
-                    playerController = GameObject.FindAnyObjectByType<PlayerController>();
-                    playerController.currentUnit.updateSpriteRotation();
+
+                    foreach(Unit u in gameManager.units)
+                    {
+                        u.updateSpriteRotation();
+                    }
+
+                    //playerController = GameObject.FindAnyObjectByType<PlayerController>();
+                    //playerController.currentUnit.updateSpriteRotation();
 
 
 
