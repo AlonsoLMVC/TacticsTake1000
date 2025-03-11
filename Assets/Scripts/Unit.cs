@@ -25,6 +25,8 @@ public class Unit : MonoBehaviour
 
     public Node currentNode;
 
+    public GameObject selectionArrow;
+
 
     private static Dictionary<string, double[]> JobGrowthRates = new Dictionary<string, double[]>()
     {
@@ -242,5 +244,11 @@ public class Unit : MonoBehaviour
     public void AddAbilitySet(AbilitySet abilitySet)
     {
         AbilitySets.Add(abilitySet);
+    }
+
+    public void SetSelectionArrowVisibility(bool isVisible)
+    {
+        if (selectionArrow != null)
+            selectionArrow.SetActive(isVisible);
     }
 }

@@ -326,28 +326,31 @@ public class GameManager : MonoBehaviour
         if (walkableTiles.Count == 0) return null;
 
         // Pick a random walkable tile
-        Node spawnTile = walkableTiles[Random.Range(0, walkableTiles.Count)];
+        Node spawnNode = walkableTiles[Random.Range(0, walkableTiles.Count)];
 
-        float tileHeight = spawnTile.tileObject.transform.localScale.y; // Get the cube's height
+        float tileHeight = spawnNode.tileObject.transform.localScale.y; // Get the cube's height
         float characterHeight = 1f; // Change this based on your character's height
         float placementOffset = (tileHeight / 2f) + (characterHeight / 2f); //  Adjust for tile & character height
 
-        Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y + placementOffset, spawnTile.y); // XZ plane with correct Y height
+        Vector3 spawnPosition = new Vector3(spawnNode.x, spawnNode.tileObject.transform.position.y + placementOffset, spawnNode.y); // XZ plane with correct Y height
 
         // Instantiate the character
         Unit newUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity).GetComponent<Unit>();
 
         newUnit.setJobandAllegianceAndInitialize(job, isAllied);
+        
 
-        Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
-        newUnit.currentNode = spawnTile;
+        Debug.Log("Spawn tile is " + spawnNode.x + ", " + spawnNode.y);
+        newUnit.currentNode = spawnNode;
         playerController.placementOffset = placementOffset;
 
         Camera.main.GetComponent<CameraController>().assignPlayer(newUnit.gameObject);
 
         playerController.assignStartingUnit(playerController.currentUnit);
 
-        spawnTile.isWalkable = false;
+        spawnNode.isWalkable = false;
+        spawnNode.hasUnitOnTile = true;
+
 
         return newUnit;
 
@@ -389,7 +392,9 @@ public class GameManager : MonoBehaviour
                         cube = Instantiate(cubePrefab, position, Quaternion.identity);
                         topCube = cube;
                         cube.GetComponent<Node>().setValues(x, y, true, topCube, altitude);
+                        cube.GetComponent<Node>().gameManager = this;
                         grid[x, y] = cube.GetComponent<Node>();
+                        
 
                     }
                     else{

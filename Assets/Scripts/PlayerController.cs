@@ -118,6 +118,11 @@ public class PlayerController : MonoBehaviour
             float currentAltitude = currentUnit.currentNode.altitude;
             float targetAltitude = targetNode.altitude;
 
+            //we reset the details of the node the unit is on before it even moves
+            currentUnit.currentNode.isWalkable = true;
+            currentUnit.currentNode.hasUnitOnTile = false;
+
+
             //Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
             if (Mathf.Abs(targetAltitude - currentAltitude) >= currentUnit.currentNode.tileObject.transform.localScale.y) // Detect height differences
@@ -191,6 +196,7 @@ public class PlayerController : MonoBehaviour
         pathIndex++;
         currentUnit.currentNode = targetNode;
 
+
         if (pathIndex < path.Count)
         {
             currentUnit.currentNode = path[pathIndex];
@@ -216,9 +222,12 @@ public class PlayerController : MonoBehaviour
 
             gameManager.ChangeState(GameManager.GameState.DirectionSelect);
 
-            targetNode.isWalkable = false;
-            currentUnit.currentNode.isWalkable = true;
+
+            targetNode.isWalkable = false;            
             currentUnit.currentNode = targetNode;
+            targetNode.hasUnitOnTile = true;
+
+
             gameManager.clearHighlightedTiles();
         }
     }
@@ -285,11 +294,16 @@ public class PlayerController : MonoBehaviour
         else
         {
             isMoving = false; //  Only reset when fully finished
-            currentUnit.currentNode = targetNode;
 
             gameManager.ChangeState(GameManager.GameState.DirectionSelect);
 
-            GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
+            //update node walkable information
+            targetNode.isWalkable = false;
+            currentUnit.currentNode = targetNode;
+            targetNode.hasUnitOnTile = true;
+
+
+            gameManager.clearHighlightedTiles();
 
         }
     }

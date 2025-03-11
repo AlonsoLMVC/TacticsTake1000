@@ -19,18 +19,12 @@ public class Node : MonoBehaviour
 
     public bool isHighlighted;
 
-    Unit currentUnit;
+    public bool hasUnitOnTile;
 
-    public Node(int x, int y, bool isWalkable, GameObject tileObject, int altitude)
-    {
-        this.x = x;
-        this.y = y;
-        this.isWalkable = isWalkable;
-        this.tileObject = tileObject;
-        this.altitude = altitude;
-        isHighlighted = false;
-        UpdateColor();
-    }
+    public GameManager gameManager;
+
+
+
 
     public void setValues(int x, int y, bool isWalkable, GameObject tileObject, int altitude) {
 
@@ -86,6 +80,7 @@ public class Node : MonoBehaviour
     // Show or hide highlight
     public void SetHighlightVisibility(bool isVisible)
     {
+        isHighlighted = isVisible;
         if (highlight != null)
             highlight.SetActive(isVisible);
     }
@@ -123,13 +118,38 @@ public class Node : MonoBehaviour
 
 
 
+
+
+
     private TileUIManager tileUIManager;
     private Node nodeReference;
 
     void OnMouseEnter()
     {
         SetSelectionIndicatorVisibility(true);
-        SetSelectionArrowVisibility(true);
+
+
+        if (hasUnitOnTile) 
+        {
+            Debug.Log("there is a unit on  this tile");
+
+            foreach(Unit u in gameManager.units)
+            {
+                if(u.currentNode == this)
+                {
+                    u.SetSelectionArrowVisibility(true);
+                    
+                }
+            }
+            
+        }
+        else
+        {
+            Debug.Log("there is NOT a unit on  this tile");
+
+            SetSelectionArrowVisibility(true);
+        }
+        
         
 
 
@@ -138,8 +158,22 @@ public class Node : MonoBehaviour
     void OnMouseExit()
     {
         SetSelectionIndicatorVisibility(false);
-        SetSelectionArrowVisibility(false);
+
         
+        SetSelectionArrowVisibility(false);
+
+        //god this is silly
+        foreach (Unit u in gameManager.units)
+        {
+            
+                u.SetSelectionArrowVisibility(false);
+
+            
+        }
+
+
+
+
 
 
     }
