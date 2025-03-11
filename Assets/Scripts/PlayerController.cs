@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
             gameManager.ChangeState(GameManager.GameState.InAction);
             isMoving = true;
 
-            
+            //currentUnit.currentNode.isWalkable = true;
 
             Vector3 currentPosition = currentUnit.gameObject.transform.position; 
             Node targetNode = path[0];
@@ -216,6 +216,8 @@ public class PlayerController : MonoBehaviour
 
             gameManager.ChangeState(GameManager.GameState.DirectionSelect);
 
+            targetNode.isWalkable = false;
+            currentUnit.currentNode.isWalkable = true;
             currentUnit.currentNode = targetNode;
             gameManager.clearHighlightedTiles();
         }

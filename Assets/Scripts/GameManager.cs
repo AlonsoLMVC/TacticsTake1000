@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     public GameObject unitPrefab; // Assign in the Inspector
     public PlayerController playerController;
     public GameObject cubePrefab;
+    public GameObject fillerCubePrefab;
 
     public GameObject uiManagerObject;
     public GameObject compassGameObject;
@@ -346,6 +347,8 @@ public class GameManager : MonoBehaviour
 
         playerController.assignStartingUnit(playerController.currentUnit);
 
+        spawnTile.isWalkable = false;
+
         return newUnit;
 
     }
@@ -379,23 +382,37 @@ public class GameManager : MonoBehaviour
                     float yPos = (i * cubeHeight) + (cubeHeight / 2f); // Centers cube on Y
 
                     Vector3 position = new Vector3(x, yPos, y);
-                    GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity);
+                    GameObject cube;
+
+                    if (i == altitude - 1)
+                    {
+                        cube = Instantiate(cubePrefab, position, Quaternion.identity);
+                        topCube = cube;
+                        cube.GetComponent<Node>().setValues(x, y, true, topCube, altitude);
+                        grid[x, y] = cube.GetComponent<Node>();
+
+                    }
+                    else{
+                        cube = Instantiate(fillerCubePrefab, position, Quaternion.identity);
+                    }
+
+
+
+
 
                     cube.name = $"Cube {x},{y},{i}";
 
                     // Store the top cube only
-                    if (i == altitude - 1)
-                    {
-                        topCube = cube;
-                    }
+                    
                 }
-
+                /*
                 // Add only the top cube to the grid
                 if (topCube != null)
                 {
                     grid[x, y] = new Node(x, y, true, topCube, altitude);
                     
                 }
+                */
             }
         }
     }
@@ -531,14 +548,16 @@ public class GameManager : MonoBehaviour
             if (highlightNode == pc.currentUnit.currentNode) continue;
 
             highlightedNodes.Add(highlightNode);
-            highlightNode.ToggleHighlight();
+            highlightNode.SetHighlightVisibility(true);
+            highlightNode.isHighlighted = true;
+
         }
     }
 
     public void clearHighlightedTiles(){
 
         foreach (Node node in highlightedNodes){
-            node.ToggleHighlight();
+            node.SetHighlightVisibility(false);
         }
 
         highlightedNodes.Clear();
