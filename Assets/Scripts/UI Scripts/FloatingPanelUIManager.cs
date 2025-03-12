@@ -12,7 +12,7 @@ public class FloatingPanelUIManager : MonoBehaviour
     [SerializeField] private HealthBar healthBar;
     [SerializeField] private TextMeshProUGUI currentHealthText;
     [SerializeField] private TextMeshProUGUI finalHealthText;
-
+    [SerializeField] private GameObject triangle;
     /// <summary>
     /// Updates the floating panel UI with unit information.
     /// </summary>
@@ -30,11 +30,11 @@ public class FloatingPanelUIManager : MonoBehaviour
         if (currentHealthText != null)
             currentHealthText.text = $"{Mathf.CeilToInt(currentHealth)}";
 
-        if (finalHealthText != null)
-            finalHealthText.text = $"{Mathf.CeilToInt(maxHealth)}";
-
         if (healthBar != null)
             healthBar.UpdateHealth(currentHealth, 0, maxHealth); // No predicted damage
+
+        triangle.SetActive(false);
+        finalHealthText.gameObject.SetActive(false);
     }
 
     /// <summary>

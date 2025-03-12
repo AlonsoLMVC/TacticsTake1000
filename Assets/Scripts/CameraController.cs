@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
     private Vector3 gridCenter; // Stores the center of the grid
 
     public GameObject compass;
-    private PlayerController playerController;
+    public PlayerController playerController;
     public GameManager gameManager;
 
     // Variables to store the original camera position, rotation, and zoom
@@ -41,39 +41,41 @@ public class CameraController : MonoBehaviour
     }
 
 
+    private Transform lastTarget = null; // Store last target to prevent unnecessary calls
+
     private void Update()
     {
-        //HandleMovement();
-        //HandleZoom();
         HandleGridRotation();
-        //HandlePlayerZoom(); // New function for zooming on player
-    /*
-    if (Input.GetKeyDown(KeyCode.C)) // Press C to center without zooming
-    {
-        CenterCameraOnPlayer();
-    }
-    */
 
+        // Ensure we're not constantly restarting movement to the same target
+        /*
+        if (playerController.currentHoveredNode != null && playerController.currentHoveredNode.transform != lastTarget)
+        {
+            lastTarget = playerController.currentHoveredNode.transform;
+            SmoothFocusOnTarget(lastTarget);
+        }
+        */
     }
+
 
 
     public void SmoothFocusOnTarget(Transform target, float duration = 0.5f)
-{
-    if (target == null) return;
+    {
+        if (target == null || transform.position == target.position) return;
 
-    // Stop any ongoing transition
-    if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+        Debug.Log("Smoothly moving to: " + target.name);
 
-    // Calculate camera position and rotation
-    float heightOffset = Mathf.Max(gridWidth, gridHeight) * 1.2f;
-    float distance = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
 
-    Vector3 targetPosition = target.position + new Vector3(-distance, heightOffset, -distance);
-    Quaternion targetRotation = Quaternion.Euler(30, 45, 0); // Standard isometric view
+        float heightOffset = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+        float distance = Mathf.Max(gridWidth, gridHeight) * 1.2f;
 
-    // Start smooth transition
-    zoomCoroutine = StartCoroutine(SmoothCameraTransition(targetPosition, targetRotation, cam.orthographicSize, duration));
-}
+        Vector3 targetPosition = target.position + new Vector3(-distance, heightOffset, -distance);
+        Quaternion targetRotation = Quaternion.Euler(30, 45, 0);
+
+        zoomCoroutine = StartCoroutine(SmoothCameraTransition(targetPosition, targetRotation, cam.orthographicSize, duration));
+    }
+
 
 
 
@@ -189,6 +191,7 @@ public class CameraController : MonoBehaviour
             transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
             cam.orthographicSize = Mathf.Lerp(startZoom, targetZoom, t);
 
+
             elapsedTime += Time.deltaTime;
             yield return null;
         }
@@ -251,6 +254,8 @@ public class CameraController : MonoBehaviour
 
     float halfwayAngle;
     bool hasTriggeredHalfway;
+
+
     void HandleGridRotation()
     {
         

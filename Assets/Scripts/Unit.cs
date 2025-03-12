@@ -8,7 +8,7 @@ public class Unit : MonoBehaviour
 {
     public string Name;
     public string Job;
-    public int Level, HP, MP, WAtk, WDefense, MPow, MRes, Speed, Jump, MoveRange, Evade, SRes, CT;
+    public int Level, maxHP, currentHP, MP, WAtk, WDefense, MPow, MRes, Speed, Jump, MoveRange, Evade, SRes, CT;
 
     public int exp, maxExp;
     public Vector2 Position;
@@ -28,6 +28,7 @@ public class Unit : MonoBehaviour
     public Node currentNode;
 
     public GameObject selectionArrow;
+
 
 
     private static Dictionary<string, double[]> JobGrowthRates = new Dictionary<string, double[]>()
@@ -75,7 +76,8 @@ public class Unit : MonoBehaviour
 
 
         int[] baseStats = UnitFactory.JobBaseStats[job];
-        HP = baseStats[0];
+        maxHP = baseStats[0];
+        currentHP = baseStats[0];
         MP = baseStats[1];
         WAtk = baseStats[2];
         WDefense = baseStats[3];
@@ -201,7 +203,7 @@ public class Unit : MonoBehaviour
         Level++;
         double[] growth = JobGrowthRates[Job];
 
-        HP = (int)(HP * growth[0]);
+        maxHP = (int)(maxHP * growth[0]);
         MP = (int)(MP * growth[1]);
         WAtk = (int)(WAtk * growth[2]);
         WDefense = (int)(WAtk * growth[3]);
@@ -261,5 +263,27 @@ public class Unit : MonoBehaviour
     {
         if (selectionArrow != null)
             selectionArrow.SetActive(isVisible);
+    }
+
+    public UIManager uiManager;
+
+    public void OnHoverEnter()
+    {
+        Debug.Log("Mouse entered: " + gameObject.name);
+        // Add logic (e.g., change color, highlight, etc.)
+
+        currentNode.SetSelectionIndicatorVisibility(true);
+        SetSelectionArrowVisibility(true);
+        uiManager.SetFloatingPanelActive(true);
+        uiManager.floatingPanel.UpdateFloatingPanel(Name, Level, null, currentHP, maxHP);
+    }
+
+    public void OnHoverExit()
+    { 
+        Debug.Log("Mouse exited: " + gameObject.name);
+        // Add logic (e.g., remove highlight, reset color, etc.)
+        currentNode.SetSelectionIndicatorVisibility(false);
+        SetSelectionArrowVisibility(false);
+        uiManager.SetFloatingPanelActive(false);
     }
 }

@@ -450,6 +450,8 @@ GameObject:
   - component: {fileID: 911649169447176811}
   - component: {fileID: 7760999696630526725}
   - component: {fileID: 8791638391289196641}
+  - component: {fileID: 1271906854550971923}
+  - component: {fileID: 1098330442619184187}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -570,6 +572,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gm: {fileID: 0}
+--- !u!114 &1271906854550971923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342556718757644395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c372552f99094c14a93aec78d05a3582, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!136 &1098330442619184187
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342556718757644395}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.1
+  m_Height: 0.26
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.00000011920929, z: 0}
 --- !u!1 &1442969340109133805
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,7 +658,8 @@ MonoBehaviour:
   Name: Allied_Black Mage
   Job: Black Mage
   Level: 1
-  HP: 100
+  maxHP: 0
+  currentHP: 0
   MP: 60
   WAtk: 8
   WDefense: 6
@@ -633,6 +671,8 @@ MonoBehaviour:
   Evade: 5
   SRes: 10
   CT: 0
+  exp: 0
+  maxExp: 0
   Position: {x: 0, y: 0}
   IsAllied: 1
   directionFacing: {x: 0, y: 1}
@@ -644,6 +684,7 @@ MonoBehaviour:
   hasMoved: 0
   currentNode: {fileID: 0}
   selectionArrow: {fileID: 7643786397563805951}
+  uiManager: {fileID: 0}
 --- !u!1 &1702879277501588620
 GameObject:
   m_ObjectHideFlags: 0

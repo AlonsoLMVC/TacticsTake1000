@@ -124,6 +124,7 @@ public class Node : MonoBehaviour
 
     private TileUIManager tileUIManager;
     private Node nodeReference;
+    public UIManager uiManager;
 
     void OnMouseEnter()
     {
@@ -139,6 +140,9 @@ public class Node : MonoBehaviour
                 if(u.currentNode == this)
                 {
                     u.SetSelectionArrowVisibility(true);
+                    uiManager.SetFloatingPanelActive(true);
+                    uiManager.floatingPanel.UpdateFloatingPanel(u.Name, u.Level, null, u.currentHP, u.maxHP);
+
                     
                 }
             }
@@ -164,6 +168,11 @@ public class Node : MonoBehaviour
         
         SetSelectionArrowVisibility(false);
 
+        if (hasUnitOnTile)
+        {
+            uiManager.SetFloatingPanelActive(false);
+
+        }
         //god this is silly
         foreach (Unit u in gameManager.units)
         {

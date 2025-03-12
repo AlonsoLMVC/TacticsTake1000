@@ -278,7 +278,7 @@ public class GameManager : MonoBehaviour
             {
 
 
-                ChangeState(GameState.DestinationSelect);
+                ChangeState(GameState.CommandSelect);
 
                 //this happens after a move action, or after an attack that has already moved.
 
@@ -487,6 +487,7 @@ public class GameManager : MonoBehaviour
         Unit newUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity).GetComponent<Unit>();
 
         newUnit.setJobandAllegianceAndInitialize(job, isAllied);
+        newUnit.uiManager = uiManager;
 
 
         //Debug.Log("Spawn tile is " + spawnNode.x + ", " + spawnNode.y);
@@ -542,6 +543,7 @@ public class GameManager : MonoBehaviour
                         cube.GetComponent<Node>().setValues(x, y, true, topCube, altitude);
                         cube.GetComponent<Node>().gameManager = this;
                         cube.GetComponent<Node>().playerController = playerController;
+                        cube.GetComponent<Node>().uiManager = uiManager;
                         grid[x, y] = cube.GetComponent<Node>();
 
 
@@ -653,23 +655,28 @@ public class GameManager : MonoBehaviour
         {
             GameObject clickedObject = hit.collider.gameObject;
 
-            // Check if the clicked object is a tile
+            Debug.Log("Clicked: " + clickedObject.name);
+
+            // Check if it's a Tile
             foreach (Node node in grid)
             {
                 if (node.tileObject == clickedObject)
                 {
-
-
                     if (node.isHighlighted)
                     {
                         playerController.attack();
-
                     }
-
-
-                    break;
-
+                    return; // Stop checking once we find a match
                 }
+            }
+
+            // Check if it's part of a Unit
+            Unit clickedUnit = hit.collider.GetComponentInParent<Unit>();
+            if (clickedUnit != null)
+            {
+                Debug.Log("Clicked a unit: " + clickedUnit.name);
+                playerController.attack();
+                return; // Prevent unnecessary extra checks
             }
         }
     }

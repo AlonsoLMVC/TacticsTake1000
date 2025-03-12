@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
         uiManager.profilePicturePanel.SetProfileImage(newUnit.displaySprite);
         uiManager.profilePicturePanel.SetLevelText(newUnit.Level);
 
-        uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.HP, newUnit.HP);
+        uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.currentHP, newUnit.maxHP);
 
     }
 
@@ -235,7 +235,7 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
 
-            gameManager.ChangeState(GameManager.GameState.StandbyDirectionSelect);
+            gameManager.ChangeState(GameManager.GameState.CommandSelect);
 
 
             targetNode.isWalkable = false;            
@@ -310,7 +310,7 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
 
-            gameManager.ChangeState(GameManager.GameState.StandbyDirectionSelect);
+            gameManager.ChangeState(GameManager.GameState.CommandSelect);
 
             //update node walkable information
             targetNode.isWalkable = false;
