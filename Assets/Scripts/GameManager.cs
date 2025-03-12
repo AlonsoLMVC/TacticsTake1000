@@ -84,12 +84,152 @@ public class GameManager : MonoBehaviour
 
         /*
          * 
-         * 
+         * NEW FEATURE ALERT
          * 
          * 
          */
 
+        InitializePathLineRenderer();
+
+
     }
+    private LineRenderer pathLineRenderer;
+    private void InitializePathLineRenderer()
+    {
+        GameObject lineObject = new GameObject("PathLine");
+        pathLineRenderer = lineObject.AddComponent<LineRenderer>();
+
+        pathLineRenderer.startWidth = 0.1f;
+        pathLineRenderer.endWidth = 0.1f;
+        pathLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        pathLineRenderer.positionCount = 0;
+    }
+
+    private void UpdatePathVisualization()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            GameObject hoveredObject = hit.collider.gameObject;
+
+            foreach (Node node in grid)
+            {
+                if (node.tileObject == hoveredObject && node.isHighlighted)
+                {
+                    List<Node> path = pathfinding.FindPath(
+                        new Vector2Int(playerController.currentUnit.currentNode.x, playerController.currentUnit.currentNode.y),
+                        new Vector2Int(node.x, node.y)
+                    );
+
+                    if (path != null && path.Count > 0)
+                    {
+                        DrawPathLine(path);
+                    }
+                    else
+                    {
+                        ClearPathLine();
+                    }
+                    return; // Exit early since we found a valid node
+                }
+            }
+        }
+
+        // Clear path if no valid tile is found
+        ClearPathLine();
+    }
+
+    private void DrawPathLine(List<Node> path)
+    {
+        if (path == null || path.Count == 0) return;
+
+        List<Vector3> linePositions = new List<Vector3>();
+
+        // Add the player's current node to the beginning of the path
+        List<Node> fullPath = new List<Node> { playerController.currentUnit.currentNode };
+        fullPath.AddRange(path);
+
+        for (int i = 0; i < fullPath.Count; i++)
+        {
+            Node currentNode = fullPath[i];
+            Vector3 currentPos = currentNode.tileObject.transform.position;
+            currentPos.y += (currentNode.tileObject.transform.localScale.y / 2) + 0.1f; // Ensure the line is on top
+
+            if (i == 0)
+            {
+                linePositions.Add(currentPos);
+                continue; // First node is just added, no transitions needed
+            }
+
+            Node prevNode = fullPath[i - 1];
+            Vector3 prevPos = prevNode.tileObject.transform.position;
+            prevPos.y += (prevNode.tileObject.transform.localScale.y / 2) + 0.1f; // Ensure previous node is correct
+
+            // Detect height difference using altitude
+            if (Mathf.Abs(currentNode.altitude - prevNode.altitude) >= prevNode.tileObject.transform.localScale.y)
+            {
+                bool goingUp = currentNode.altitude > prevNode.altitude;
+
+                // Dynamically determine where the transition happens based on tile size
+                float transitionOffset = Mathf.Clamp((prevNode.tileObject.transform.localScale.x / 3f), 0.45f, 0.55f);
+                if (!goingUp)
+                    transitionOffset = 1f - transitionOffset; // Flip transition point for downward movement
+
+                // Step 1: Move horizontally before or after the middle of the tile
+                Vector3 midPoint1 = new Vector3(
+                    Mathf.Lerp(prevPos.x, currentPos.x, transitionOffset),
+                    prevPos.y, // Stay at the first tile's height
+                    Mathf.Lerp(prevPos.z, currentPos.z, transitionOffset)
+                );
+                linePositions.Add(midPoint1);
+
+                // Step 2: Move vertically to the new height
+                Vector3 midPoint2 = new Vector3(
+                    midPoint1.x,
+                    currentPos.y, // Move up/down to the second tile's height
+                    midPoint1.z
+                );
+                linePositions.Add(midPoint2);
+            }
+
+            // Step 3: Move horizontally to the next tile
+            linePositions.Add(currentPos);
+        }
+
+        // Apply positions to the LineRenderer
+        pathLineRenderer.positionCount = linePositions.Count;
+        pathLineRenderer.SetPositions(linePositions.ToArray());
+    }
+
+
+
+
+
+
+
+
+
+
+
+    private void ClearPathLine()
+    {
+        pathLineRenderer.positionCount = 0;
+    }
+
+
+
+
+    /*
+         * 
+         * NEW FEATURE ALERT
+         * 
+         * 
+         */
+
+
+
+
 
     IEnumerator ExecuteAfterDelay()
     {
@@ -112,6 +252,9 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        UpdatePathVisualization(); // Runs separately from other logic
+
 
         if (currentState == GameState.TargetSelect || currentState == GameState.DestinationSelect || currentState == GameState.StandbyDirectionSelect)
         {
