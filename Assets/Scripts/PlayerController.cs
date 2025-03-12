@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        if (!isMoving && gameManager.currentState == GameManager.GameState.MoveSelect) // Only start if not already moving
+        if (!isMoving && gameManager.currentState == GameManager.GameState.DestinationSelect) // Only start if not already moving
         {
             
             gameManager.ChangeState(GameManager.GameState.InAction);
@@ -220,7 +220,7 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
 
-            gameManager.ChangeState(GameManager.GameState.DirectionSelect);
+            gameManager.ChangeState(GameManager.GameState.StandbyDirectionSelect);
 
 
             targetNode.isWalkable = false;            
@@ -295,7 +295,7 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
 
-            gameManager.ChangeState(GameManager.GameState.DirectionSelect);
+            gameManager.ChangeState(GameManager.GameState.StandbyDirectionSelect);
 
             //update node walkable information
             targetNode.isWalkable = false;

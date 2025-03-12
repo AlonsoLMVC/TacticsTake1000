@@ -69,7 +69,6 @@ public class Unit : MonoBehaviour
         string allegiance = IsAllied ? "Allied" : "Enemy";
         Name =  $"{ allegiance}_{Job}";
 
-        Debug.Log("We are trying to do this!!");
 
         int[] baseStats = UnitFactory.JobBaseStats[job];
         HP = baseStats[0];
@@ -95,7 +94,7 @@ public class Unit : MonoBehaviour
 
         CT = 0;
 
-        Debug.Log($"Unit Start() - Name: {Name}, Job: {Job}, Level: {Level}, HP: {HP}");
+        //Debug.Log($"Unit Start() - Name: {Name}, Job: {Job}, Level: {Level}, HP: {HP}");
     }
 
 

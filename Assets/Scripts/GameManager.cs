@@ -9,14 +9,13 @@ public class GameManager : MonoBehaviour
 
 
 
-        public enum GameState
+    public enum GameState
     {
-        MenuNav,       // Navigating menus
-        MoveSelect,    // Selecting where to move
-        DirectionSelect, // Choosing facing direction
-        ChooseTarget,  // Selecting an attack target
-        PreviewAttack, // Previewing attack outcome
-        InAction       // Executing an action
+        DestinationSelect,    // Selecting where to move
+        CommandSelect,
+        TargetSelect,  // Selecting an attack target
+        InAction,   // Executing an action
+        StandbyDirectionSelect, // Choosing facing direction
     }
 
     public GameState currentState;
@@ -49,7 +48,7 @@ public class GameManager : MonoBehaviour
         units = new List<Unit>();
 
         GenerateGrid();
-        
+
 
 
         units.Add(SpawnUnitWithJobAndAllegiance("Archer", true));
@@ -65,7 +64,7 @@ public class GameManager : MonoBehaviour
         units.Add(SpawnUnitWithJobAndAllegiance("White Mage", true));
 
         playerController.currentUnit = units[0];
-        
+
 
 
         // Pass grid size to CameraController
@@ -76,11 +75,19 @@ public class GameManager : MonoBehaviour
             cameraController.gridHeight = height;
         }
 
-        
-        currentState = GameState.MenuNav;
-        ChangeState(GameState.MenuNav);
+
 
         StartCoroutine(ExecuteAfterDelay());
+
+
+
+
+        /*
+         * 
+         * 
+         * 
+         * 
+         */
 
     }
 
@@ -88,14 +95,17 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
-        foreach(Unit u in units){
-            u.directionFacing = new Vector2(0,1);
+        foreach (Unit u in units)
+        {
+            u.directionFacing = new Vector2(0, 1);
             u.updateSpriteRotation();
         }
 
 
         playerController.setDirectionFacing(new Vector2(0, 1));
         Debug.Log("Executed after 2 seconds");
+
+        ChangeState(GameState.DestinationSelect);
     }
 
 
@@ -103,26 +113,36 @@ public class GameManager : MonoBehaviour
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        if (currentState == GameState.ChooseTarget || currentState == GameState.MoveSelect || currentState == GameState.DirectionSelect)
+        if (currentState == GameState.TargetSelect || currentState == GameState.DestinationSelect || currentState == GameState.StandbyDirectionSelect)
         {
             //ChangeState(GameState.InAction);
             vocalTiles();
             //AttackClickedHighlightTile();
         }
 
-        if (Input.GetMouseButtonDown(0)){
+        if (Input.GetMouseButtonDown(0))
+        {
 
-            if (currentState == GameState.MoveSelect) // Left Click for obstacles
+            if (currentState == GameState.DestinationSelect) // Left Click for obstacles
             {
                 MoveToClickedHighlightedTile();
             }
-            else if(currentState == GameState.DirectionSelect){
-                ChangeState(GameState.MenuNav);
+            else if (currentState == GameState.StandbyDirectionSelect)
+            {
+
+
+                //ChangeState(GameState.MenuNav);
+
+                //this happens after a move action, or after an attack that has already moved.
+
+
+
             }
-            else if(currentState == GameState.ChooseTarget)
+
+            else if (currentState == GameState.TargetSelect)
             {
                 //ChangeState(GameState.InAction);
-                
+
                 AttackClickedHighlightTile();
             }
 
@@ -132,8 +152,8 @@ public class GameManager : MonoBehaviour
 
 
 
-        
-        
+
+
         if (Input.GetKeyDown(KeyCode.R)) // Reset scene
         {
             ReloadScene();
@@ -160,7 +180,7 @@ public class GameManager : MonoBehaviour
                     Vector2 newDirectionToFace = compassGameObject.GetComponent<Compass>()
                         .GetClosestGridDirection(playerController.currentUnit.currentNode.getGridCoordinates(), node.getGridCoordinates());
 
-                    
+
                     playerController.setDirectionFacing(newDirectionToFace);
                     playerController.setIndicatorDirectionFacing(newDirectionToFace);
 
@@ -193,28 +213,28 @@ public class GameManager : MonoBehaviour
         // Turn off UI elements when leaving a state
         switch (state)
         {
-            case GameState.MenuNav:
-                //menuUI.SetActive(false);
-                uiManagerObject.GetComponent<UIManager>().setActionPanelActive(false);
-                uiManagerObject.GetComponent<UIManager>().setMainPanelActive(false);
-                break;
-            case GameState.MoveSelect:
+
+            case GameState.DestinationSelect:
                 //moveSelectionUI.SetActive(false);
                 break;
-            case GameState.DirectionSelect:
+            case GameState.CommandSelect:
                 playerController.SetDirectionIndicatorActive(false);
                 //directionUI.SetActive(false);
                 break;
-            case GameState.ChooseTarget:
+            case GameState.TargetSelect:
                 //attackTargetUI.SetActive(false);
-                break;
-            case GameState.PreviewAttack:
-                //attackPreviewUI.SetActive(false);
                 break;
             case GameState.InAction:
                 //actionExecutionUI.SetActive(false);
                 break;
+            case GameState.StandbyDirectionSelect:
+                playerController.SetDirectionIndicatorActive(false);
+                //directionUI.SetActive(false);
+                break;
         }
+
+
+
     }
 
     private void OnEnterState(GameState state)
@@ -222,34 +242,23 @@ public class GameManager : MonoBehaviour
         // Activate necessary UI elements when entering a new state
         switch (state)
         {
-            case GameState.MenuNav:
-                //menuUI.SetActive(true);
-                uiManagerObject.GetComponent<UIManager>().setActionPanelActive(false);
-                uiManagerObject.GetComponent<UIManager>().setMainPanelActive(true);
-                currentState = GameState.MenuNav;
-                break;
-            case GameState.MoveSelect:
+
+            case GameState.DestinationSelect:
                 //moveSelectionUI.SetActive(true);
-                currentState = GameState.MoveSelect;
+                Debug.Log("entering destination select");
+                highlightSurroundingTiles(playerController.currentUnit.gameObject.GetComponent<Unit>().MoveRange);
+                currentState = GameState.DestinationSelect;
 
                 break;
-            case GameState.DirectionSelect:
-                //directionUI.SetActive(true);
-                playerController.SetDirectionIndicatorActive(true);
-                playerController.currentUnit.gameObject.GetComponent<Unit>().directionIndicator.ToggleSpheres(true);
-                currentState = GameState.DirectionSelect;
-
+            case GameState.CommandSelect:
+                //attackPreviewUI.SetActive(true);
+                currentState = GameState.CommandSelect;
 
                 break;
-            case GameState.ChooseTarget:
+            case GameState.TargetSelect:
                 //attackTargetUI.SetActive(true);
 
-                currentState = GameState.ChooseTarget;
-
-                break;
-            case GameState.PreviewAttack:
-                //attackPreviewUI.SetActive(true);
-                currentState = GameState.PreviewAttack;
+                currentState = GameState.TargetSelect;
 
                 break;
             case GameState.InAction:
@@ -258,7 +267,30 @@ public class GameManager : MonoBehaviour
 
                 //ExecuteAction();
                 break;
+            case GameState.StandbyDirectionSelect:
+                //directionUI.SetActive(true);
+                playerController.SetDirectionIndicatorActive(true);
+                playerController.currentUnit.gameObject.GetComponent<Unit>().directionIndicator.ToggleSpheres(true);
+                currentState = GameState.StandbyDirectionSelect;
+
+
+                break;
+
+
+
         }
+
+
+        /*
+DestinationSelect,    // Selecting where to move
+CommandSelect,  
+TargetSelect,  // Selecting an attack target
+InAction,   // Executing an action
+StandbyDirectionSelect, // Choosing facing direction
+*/
+
+
+
     }
 
 
@@ -274,7 +306,7 @@ public class GameManager : MonoBehaviour
     private void FinishAction()
     {
         Debug.Log("Action completed! Returning to menu navigation.");
-        ChangeState(GameState.MenuNav);
+        //ChangeState(GameState.MenuNav);
     }
 
 
@@ -338,9 +370,9 @@ public class GameManager : MonoBehaviour
         Unit newUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity).GetComponent<Unit>();
 
         newUnit.setJobandAllegianceAndInitialize(job, isAllied);
-        
 
-        Debug.Log("Spawn tile is " + spawnNode.x + ", " + spawnNode.y);
+
+        //Debug.Log("Spawn tile is " + spawnNode.x + ", " + spawnNode.y);
         newUnit.currentNode = spawnNode;
         playerController.placementOffset = placementOffset;
 
@@ -394,10 +426,11 @@ public class GameManager : MonoBehaviour
                         cube.GetComponent<Node>().setValues(x, y, true, topCube, altitude);
                         cube.GetComponent<Node>().gameManager = this;
                         grid[x, y] = cube.GetComponent<Node>();
-                        
+
 
                     }
-                    else{
+                    else
+                    {
                         cube = Instantiate(fillerCubePrefab, position, Quaternion.identity);
                     }
 
@@ -408,7 +441,7 @@ public class GameManager : MonoBehaviour
                     cube.name = $"Cube {x},{y},{i}";
 
                     // Store the top cube only
-                    
+
                 }
                 /*
                 // Add only the top cube to the grid
@@ -428,7 +461,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Move Button Clicked");
 
         highlightSurroundingTiles(playerController.currentUnit.gameObject.GetComponent<Unit>().MoveRange);
-        ChangeState(GameState.MoveSelect);
+        ChangeState(GameState.DestinationSelect);
 
 
     }
@@ -451,7 +484,7 @@ public class GameManager : MonoBehaviour
         //honestly for now we are going to use just the surrounding tiles for possible attack tiles
         highlightSurroundingTiles(1);
 
-        ChangeState(GameState.ChooseTarget);
+        ChangeState(GameState.TargetSelect);
 
         playerController.nextAttackIsMagic = false;
 
@@ -465,7 +498,7 @@ public class GameManager : MonoBehaviour
         //honestly for now we are going to use just the surrounding tiles for possible attack tiles
         highlightSurroundingTiles(3);
 
-        ChangeState(GameState.ChooseTarget);
+        ChangeState(GameState.TargetSelect);
 
         playerController.nextAttackIsMagic = true;
 
@@ -486,13 +519,14 @@ public class GameManager : MonoBehaviour
             {
                 if (node.tileObject == clickedObject)
                 {
-                    
 
-                    if(node.isHighlighted){
+
+                    if (node.isHighlighted)
+                    {
                         MoveCharacterToNode(node);
 
                     }
-                    
+
 
                     break;
 
@@ -559,9 +593,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void clearHighlightedTiles(){
+    public void clearHighlightedTiles()
+    {
 
-        foreach (Node node in highlightedNodes){
+        foreach (Node node in highlightedNodes)
+        {
             node.SetHighlightVisibility(false);
         }
 
@@ -606,12 +642,12 @@ public class GameManager : MonoBehaviour
 
     void MoveCharacterToNode(Node targetNode)
     {
-        
+
         if (playerController == null || playerController.IsMoving) return; // Prevent movement mid-action
         GameObject clickedObject = targetNode.tileObject;
 
-        
-        if(targetNode.isWalkable)
+
+        if (targetNode.isWalkable)
         {
             Vector3 characterPos = playerController.currentUnit.gameObject.transform.position;
 
@@ -628,9 +664,9 @@ public class GameManager : MonoBehaviour
             {
                 playerController.SetPath(path);
             }
-                    
+
         }
-      
+
     }
 
 
@@ -725,7 +761,7 @@ public class GameManager : MonoBehaviour
     public void endAttack()
     {
 
-        ChangeState(GameManager.GameState.DirectionSelect);
+        ChangeState(GameManager.GameState.StandbyDirectionSelect);
     }
 
 
