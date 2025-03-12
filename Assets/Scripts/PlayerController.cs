@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour
 
     private GameManager gameManager;
 
+    public UIManager uiManager;
+
     public Unit currentUnit;
 
     public bool nextAttackIsMagic;
@@ -36,9 +38,17 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public void assignStartingUnit(Unit startingUnit)
+
+    public void switchUnit(Unit newUnit)
     {
-        currentUnit = startingUnit;
+        currentUnit = newUnit;
+
+
+        Debug.Log($"Switching unit to: {newUnit?.name ?? "NULL"}");
+
+        
+
+        uiManager.profilePicturePanel.SetProfileImage(newUnit.displaySprite);
 
     }
 

@@ -105,37 +105,23 @@ public class Unit : MonoBehaviour
         // Construct the spritesheet name based on allegiance and job
         string allegiance = IsAllied ? "Allied" : "Enemy";
         string sanitizedJob = Job.Replace(" ", "_"); // Replace spaces with underscores
-        string spritesheetPath = $"Spritesheets/{allegiance}_{sanitizedJob}";
+        string portraitPath = $"Portraits/{allegiance}_{sanitizedJob}_Portrait";
+
+        Debug.Log(portraitPath);
+       
 
         // Load all sprites from the specified spritesheet
-        Sprite[] sprites = Resources.LoadAll<Sprite>(spritesheetPath);
+        displaySprite = Resources.Load<Sprite>(portraitPath);
 
-        if (sprites == null || sprites.Length == 0)
+        
+
+        if (displaySprite == null)
         {
-            Debug.LogError($"No sprites found at {spritesheetPath}");
+            Debug.LogError("Display sprite not found!");
             return;
         }
 
-        int spriteIndex = 10;
-
-        // Find the child named "Sprite" that has the Animator
-        GameObject spriteChild = GameObject.Find("Sprite");
-
-        if (spriteChild == null)
-        {
-            Debug.LogError("Child object named 'Sprite' not found!");
-            return;
-        }
-
-        // Ensure the index is within bounds
-        if (spriteIndex >= 0 && spriteIndex < sprites.Length)
-        {
-            spriteChild.GetComponent<SpriteRenderer>().sprite = sprites[spriteIndex];
-        }
-        else
-        {
-            Debug.LogError($"Sprite index {spriteIndex} is out of bounds for {spritesheetPath} (Max: {sprites.Length - 1})");
-        }
+        
     }
 
 

@@ -19,11 +19,11 @@ public class HealthBar : MonoBehaviour
     /// Updates the health bar visuals to reflect predicted damage.
     /// Does NOT animate the damage bar.
     /// </summary>
-    public void UpdateHealth(float newHealth, float potentialDamage, float maxHealth)
+    public void UpdateHealth(float newHealth, float incomingDamage, float maxHealth)
     {
         newHealth = Mathf.Clamp(newHealth, 0, maxHealth);
         float healthPercent = newHealth / maxHealth;
-        float damagePreviewPercent = Mathf.Clamp((newHealth - potentialDamage) / maxHealth, 0f, 1f);
+        float damagePreviewPercent = Mathf.Clamp((newHealth - incomingDamage) / maxHealth, 0f, 1f);
 
         // Show immediate health change
         healthImage.fillAmount = damagePreviewPercent;

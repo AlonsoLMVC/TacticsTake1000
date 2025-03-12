@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     public GameObject cubePrefab;
     public GameObject fillerCubePrefab;
 
-    public GameObject uiManagerObject;
+    public UIManager uiManager;
     public GameObject compassGameObject;
 
     public List<Unit> units;
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         units.Add(SpawnUnitWithJobAndAllegiance("Thief", true));
         units.Add(SpawnUnitWithJobAndAllegiance("White Mage", true));
 
-        playerController.currentUnit = units[0];
+        playerController.currentUnit = units[4];
 
 
 
@@ -235,6 +235,10 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
+        Debug.Log(playerController == null);
+        Debug.Log(playerController.currentUnit == null);
+        playerController.switchUnit(playerController.currentUnit);
+
         foreach (Unit u in units)
         {
             u.directionFacing = new Vector2(0, 1);
@@ -274,7 +278,7 @@ public class GameManager : MonoBehaviour
             {
 
 
-                //ChangeState(GameState.MenuNav);
+                ChangeState(GameState.DestinationSelect);
 
                 //this happens after a move action, or after an attack that has already moved.
 
@@ -361,22 +365,24 @@ public class GameManager : MonoBehaviour
                 //moveSelectionUI.SetActive(false);
                 break;
             case GameState.CommandSelect:
-                playerController.SetDirectionIndicatorActive(false);
+                
+
                 //directionUI.SetActive(false);
                 break;
             case GameState.TargetSelect:
+
                 //attackTargetUI.SetActive(false);
                 break;
             case GameState.InAction:
+
                 //actionExecutionUI.SetActive(false);
                 break;
             case GameState.StandbyDirectionSelect:
+
                 playerController.SetDirectionIndicatorActive(false);
                 //directionUI.SetActive(false);
                 break;
         }
-
-
 
     }
 
@@ -388,30 +394,41 @@ public class GameManager : MonoBehaviour
 
             case GameState.DestinationSelect:
                 //moveSelectionUI.SetActive(true);
-                Debug.Log("entering destination select");
-                highlightSurroundingTiles(playerController.currentUnit.gameObject.GetComponent<Unit>().MoveRange);
+
+
+                highlightedNodes = GetReachableTiles(playerController.currentUnit.currentNode, playerController.currentUnit.MoveRange);
+                foreach (Node tile in highlightedNodes)
+                {
+                    tile.SetHighlightVisibility(true);
+                }
+
+
+                uiManager.SetUIState(GameState.DestinationSelect);
                 currentState = GameState.DestinationSelect;
 
                 break;
             case GameState.CommandSelect:
                 //attackPreviewUI.SetActive(true);
+                uiManager.SetUIState(GameState.CommandSelect);
                 currentState = GameState.CommandSelect;
 
                 break;
             case GameState.TargetSelect:
                 //attackTargetUI.SetActive(true);
-
+                uiManager.SetUIState(GameState.TargetSelect);
                 currentState = GameState.TargetSelect;
 
                 break;
             case GameState.InAction:
                 //actionExecutionUI.SetActive(true);
+                uiManager.SetUIState(GameState.InAction);
                 currentState = GameState.InAction;
 
                 //ExecuteAction();
                 break;
             case GameState.StandbyDirectionSelect:
                 //directionUI.SetActive(true);
+                uiManager.SetUIState(GameState.StandbyDirectionSelect);
                 playerController.SetDirectionIndicatorActive(true);
                 playerController.currentUnit.gameObject.GetComponent<Unit>().directionIndicator.ToggleSpheres(true);
                 currentState = GameState.StandbyDirectionSelect;
@@ -422,15 +439,6 @@ public class GameManager : MonoBehaviour
 
 
         }
-
-
-        /*
-DestinationSelect,    // Selecting where to move
-CommandSelect,  
-TargetSelect,  // Selecting an attack target
-InAction,   // Executing an action
-StandbyDirectionSelect, // Choosing facing direction
-*/
 
 
 
@@ -454,40 +462,6 @@ StandbyDirectionSelect, // Choosing facing direction
 
 
 
-
-    /*
-    void SpawnCharacter()
-    {
-        List<Node> walkableTiles = new List<Node>();
-        foreach (Node node in grid)
-        {
-            if (node.isWalkable)
-                walkableTiles.Add(node);
-        }
-
-        if (walkableTiles.Count == 0) return;
-
-        // Pick a random walkable tile
-        Node spawnTile = walkableTiles[Random.Range(0, walkableTiles.Count)];
-
-        float tileHeight = spawnTile.tileObject.transform.localScale.y; // Get the cube's height
-        float characterHeight = 1f; // Change this based on your character's height
-        float placementOffset = (tileHeight / 2f) + (characterHeight / 2f); //  Adjust for tile & character height
-
-        Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y +  placementOffset, spawnTile.y); // XZ plane with correct Y height
-
-        // Instantiate the character
-        playerController.currentUnitGameObject = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);  
-
-        Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
-        playerController.currentNode = spawnTile;
-        playerController.placementOffset = placementOffset;
-
-        Camera.main.GetComponent<CameraController>().assignPlayer(playerController.currentUnitGameObject );
-
-        playerController.assignStartingUnit(playerController.currentUnitGameObject );
-    }
-    */
 
     Unit SpawnUnitWithJobAndAllegiance(string job, bool isAllied)
     {
@@ -521,7 +495,6 @@ StandbyDirectionSelect, // Choosing facing direction
 
         Camera.main.GetComponent<CameraController>().assignPlayer(newUnit.gameObject);
 
-        playerController.assignStartingUnit(playerController.currentUnit);
 
         spawnNode.isWalkable = false;
         spawnNode.hasUnitOnTile = true;
@@ -605,15 +578,6 @@ StandbyDirectionSelect, // Choosing facing direction
 
         highlightSurroundingTiles(playerController.currentUnit.gameObject.GetComponent<Unit>().MoveRange);
         ChangeState(GameState.DestinationSelect);
-
-
-    }
-
-    public void OnActButtonClicked()
-    {
-        Debug.Log("Act Button Clicked");
-
-        uiManagerObject.GetComponent<UIManager>().setActionPanelActive(true);
 
 
     }
@@ -899,6 +863,42 @@ StandbyDirectionSelect, // Choosing facing direction
 
         return surroundingTiles;
     }
+
+
+    public List<Node> GetReachableTiles(Node startNode, int moves)
+    {
+        List<Node> reachableTiles = new List<Node>();
+        Dictionary<Node, int> moveCostMap = new Dictionary<Node, int>(); // Track remaining moves per node
+
+        Queue<(Node node, int remainingMoves)> frontier = new Queue<(Node, int)>();
+        frontier.Enqueue((startNode, moves));
+        moveCostMap[startNode] = moves;
+
+        while (frontier.Count > 0)
+        {
+            var (currentNode, remainingMoves) = frontier.Dequeue();
+
+            if (remainingMoves <= 0) continue; // Stop if no moves left
+
+            foreach (Node neighbor in GetNeighbors(currentNode))
+            {
+                if (!neighbor.isWalkable) continue; // Skip unwalkable tiles
+
+                int costToEnter = 1; // Modify if different terrain has different costs
+                int newRemainingMoves = remainingMoves - costToEnter;
+
+                if (!moveCostMap.ContainsKey(neighbor) || newRemainingMoves > moveCostMap[neighbor])
+                {
+                    moveCostMap[neighbor] = newRemainingMoves;
+                    reachableTiles.Add(neighbor);
+                    frontier.Enqueue((neighbor, newRemainingMoves));
+                }
+            }
+        }
+
+        return reachableTiles;
+    }
+
 
 
     public void endAttack()
