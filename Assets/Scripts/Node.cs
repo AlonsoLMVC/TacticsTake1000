@@ -22,6 +22,7 @@ public class Node : MonoBehaviour
     public bool hasUnitOnTile;
 
     public GameManager gameManager;
+    public PlayerController playerController;
 
 
 
@@ -150,6 +151,7 @@ public class Node : MonoBehaviour
             SetSelectionArrowVisibility(true);
         }
         
+        playerController.currentHoveredNode = this;
         
 
 

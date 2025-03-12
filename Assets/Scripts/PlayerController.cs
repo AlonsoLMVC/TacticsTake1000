@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
 
     public Unit currentUnit;
 
+    public Node currentHoveredNode;
+
     public bool nextAttackIsMagic;
 
 
@@ -49,6 +51,9 @@ public class PlayerController : MonoBehaviour
         
 
         uiManager.profilePicturePanel.SetProfileImage(newUnit.displaySprite);
+        uiManager.profilePicturePanel.SetLevelText(newUnit.Level);
+
+        uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.HP, newUnit.HP);
 
     }
 

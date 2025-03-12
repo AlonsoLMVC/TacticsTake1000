@@ -43,17 +43,41 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        HandleMovement();
-        HandleZoom();
+        //HandleMovement();
+        //HandleZoom();
         HandleGridRotation();
-        HandlePlayerZoom(); // New function for zooming on player
-
+        //HandlePlayerZoom(); // New function for zooming on player
+    /*
     if (Input.GetKeyDown(KeyCode.C)) // Press C to center without zooming
     {
         CenterCameraOnPlayer();
     }
+    */
 
     }
+
+
+    public void SmoothFocusOnTarget(Transform target, float duration = 0.5f)
+{
+    if (target == null) return;
+
+    // Stop any ongoing transition
+    if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+
+    // Calculate camera position and rotation
+    float heightOffset = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+    float distance = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+
+    Vector3 targetPosition = target.position + new Vector3(-distance, heightOffset, -distance);
+    Quaternion targetRotation = Quaternion.Euler(30, 45, 0); // Standard isometric view
+
+    // Start smooth transition
+    zoomCoroutine = StartCoroutine(SmoothCameraTransition(targetPosition, targetRotation, cam.orthographicSize, duration));
+}
+
+
+
+
 
     // New method: Centers camera on player without zooming
     public void CenterCameraOnPlayer()

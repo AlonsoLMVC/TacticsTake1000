@@ -9,6 +9,8 @@ public class Unit : MonoBehaviour
     public string Name;
     public string Job;
     public int Level, HP, MP, WAtk, WDefense, MPow, MRes, Speed, Jump, MoveRange, Evade, SRes, CT;
+
+    public int exp, maxExp;
     public Vector2 Position;
     public List<AbilitySet> AbilitySets;
     public bool IsAllied;
@@ -53,7 +55,7 @@ public class Unit : MonoBehaviour
 
         
         compass = GameObject.FindAnyObjectByType<Compass>();
-
+        
         
 
        
@@ -67,7 +69,9 @@ public class Unit : MonoBehaviour
 
 
         string allegiance = IsAllied ? "Allied" : "Enemy";
-        Name =  $"{ allegiance}_{Job}";
+
+        Name =  GetRandomName();
+        gameObject.name = Name;
 
 
         int[] baseStats = UnitFactory.JobBaseStats[job];
@@ -124,6 +128,28 @@ public class Unit : MonoBehaviour
         
     }
 
+
+    string GetRandomName()
+    {
+        TextAsset textAsset = Resources.Load<TextAsset>("names"); // Load file from Resources
+        if (textAsset == null)
+        {
+            Debug.LogError("Could not find names.txt in Resources!");
+            return "Unknown";
+        }
+
+        string[] names = textAsset.text.Split('\n');
+        List<string> nameList = new List<string>();
+
+        foreach (string name in names)
+        {
+            string trimmedName = name.Trim();
+            if (!string.IsNullOrEmpty(trimmedName))
+                nameList.Add(trimmedName);
+        }
+
+        return nameList.Count > 0 ? nameList[UnityEngine.Random.Range(0, nameList.Count)] : "Unknown";
+    }
 
     void LoadAnimationController()
     {

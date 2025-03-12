@@ -541,6 +541,7 @@ public class GameManager : MonoBehaviour
                         topCube = cube;
                         cube.GetComponent<Node>().setValues(x, y, true, topCube, altitude);
                         cube.GetComponent<Node>().gameManager = this;
+                        cube.GetComponent<Node>().playerController = playerController;
                         grid[x, y] = cube.GetComponent<Node>();
 
 

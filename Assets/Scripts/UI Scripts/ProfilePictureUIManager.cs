@@ -51,7 +51,7 @@ public class ProfilePictureUIManager : MonoBehaviour
     {
         if (levelText != null)
         {
-            levelText.text = "Level: " + level;
+            levelText.text = "Lv." + level;
         }
     }
 
