@@ -41,21 +41,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void switchUnit(Unit newUnit)
-    {
-        currentUnit = newUnit;
 
-
-        Debug.Log($"Switching unit to: {newUnit?.name ?? "NULL"}");
-
-        
-
-        uiManager.profilePicturePanel.SetProfileImage(newUnit.displaySprite);
-        uiManager.profilePicturePanel.SetLevelText(newUnit.Level);
-
-        uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.currentHP, newUnit.maxHP);
-
-    }
 
 
     private void Update()
@@ -242,6 +228,7 @@ public class PlayerController : MonoBehaviour
             currentUnit.currentNode = targetNode;
             targetNode.hasUnitOnTile = true;
 
+            currentUnit.hasMoved = true;
 
             gameManager.clearHighlightedTiles();
         }
@@ -317,6 +304,8 @@ public class PlayerController : MonoBehaviour
             currentUnit.currentNode = targetNode;
             targetNode.hasUnitOnTile = true;
 
+            currentUnit.hasMoved = true;
+
 
             gameManager.clearHighlightedTiles();
 
@@ -343,8 +332,8 @@ public class PlayerController : MonoBehaviour
         {
             currentUnit.mainAnimator.SetTrigger("channel");
         }
-        
 
+        currentUnit.hasActed = true;
 
         //yield return new WaitForSeconds(2.5f);
         

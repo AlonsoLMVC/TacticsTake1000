@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class GameManager : MonoBehaviour
     public float cellSize = 1f;
     public GameObject tilePrefab;
 
+    public int turnCount = 1;
+
     private Node[,] grid;
 
     List<Node> highlightedNodes = new List<Node>();
@@ -37,11 +40,18 @@ public class GameManager : MonoBehaviour
     public PlayerController playerController;
     public GameObject cubePrefab;
     public GameObject fillerCubePrefab;
+    public GameObject scrollCellPrefab;
 
     public UIManager uiManager;
     public GameObject compassGameObject;
 
     public List<Unit> units;
+
+    private TurnCalculator turnCalculator;
+    private List<ScrollCell> scrollCells = new List<ScrollCell>();
+    public GameObject scrollParent;
+
+    public GameObject scrollBar;
 
     private void Start()
     {
@@ -63,8 +73,33 @@ public class GameManager : MonoBehaviour
         units.Add(SpawnUnitWithJobAndAllegiance("Thief", true));
         units.Add(SpawnUnitWithJobAndAllegiance("White Mage", true));
 
-        playerController.currentUnit = units[4];
+        
 
+        turnCalculator = new TurnCalculator();
+        turnCalculator.generateTurnOrder(units);
+
+        playerController.currentUnit = turnCalculator.turnOrder[0];
+        turnCalculator.turnOrder.RemoveAt(0);
+
+        for (int i = 0; i < turnCalculator.turnOrder.Count; i++)
+        {
+            Unit unit = turnCalculator.turnOrder[i];
+
+            // Instantiate a new ScrollCell
+            GameObject newCell = Instantiate(scrollCellPrefab, scrollParent.transform);
+
+            // Get the ScrollCell script component
+            ScrollCell cell = newCell.GetComponent<ScrollCell>();
+
+            if (cell != null)
+            {
+                // Set unit data (unit and turn order number)
+                cell.SetUnitData(unit, i + 2);
+                scrollCells.Add(cell);
+            }
+        }
+
+        
 
 
         // Pass grid size to CameraController
@@ -229,6 +264,68 @@ public class GameManager : MonoBehaviour
 
 
 
+    public void startNewTurnWith(Unit newUnit)
+    {
+
+        Debug.Log($"Switching unit to: {newUnit?.Job ?? "NULL"}");
+
+        playerController.SetDirectionIndicatorActive(false);
+
+        uiManager.profilePicturePanel.SetProfileImage(newUnit.displaySprite);
+        uiManager.profilePicturePanel.SetLevelText(newUnit.Level);
+
+        uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.currentHP, newUnit.maxHP);
+
+
+
+
+        if (turnCount == 1)
+        {
+            turnCount++;
+            return;
+        }
+
+
+
+        playerController.currentUnit.hasActed = false;
+        playerController.currentUnit.hasMoved = false;
+
+        playerController.currentUnit = newUnit;
+
+
+        
+
+
+        //we need to generate a new scroll cell and get rid of the last one
+        Debug.Log(scrollCells[0] + "----------------------------------------------------------");
+        Destroy(scrollCells[0].gameObject);
+        scrollCells.RemoveAt(0);
+
+        
+        //update the turn order for the cells
+        foreach(ScrollCell c in scrollCells)
+        {
+            c.setTurnOrder(int.Parse(c.turnOrderText.text) - 1);
+        }
+
+        // Instantiate a new ScrollCell
+        GameObject newCell = Instantiate(scrollCellPrefab, scrollParent.transform);
+
+        // Get the ScrollCell script component
+        ScrollCell cell = newCell.GetComponent<ScrollCell>();
+
+        if (cell != null)
+        {
+            // Set unit data (unit and turn order number)
+            cell.SetUnitData(turnCalculator.getNextUnit(units), 30);
+            scrollCells.Add(cell);
+        
+        }
+
+        ChangeState(GameState.DestinationSelect);
+
+
+    }
 
 
     IEnumerator ExecuteAfterDelay()
@@ -237,7 +334,9 @@ public class GameManager : MonoBehaviour
 
         Debug.Log(playerController == null);
         Debug.Log(playerController.currentUnit == null);
-        playerController.switchUnit(playerController.currentUnit);
+        startNewTurnWith(playerController.currentUnit);
+
+        scrollBar.GetComponent<Scrollbar>().value = 0;
 
         foreach (Unit u in units)
         {
@@ -277,8 +376,8 @@ public class GameManager : MonoBehaviour
             else if (currentState == GameState.StandbyDirectionSelect)
             {
 
-
-                ChangeState(GameState.CommandSelect);
+                startNewTurnWith(scrollCells[0].unit);
+                
 
                 //this happens after a move action, or after an attack that has already moved.
 
@@ -379,7 +478,6 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.StandbyDirectionSelect:
 
-                playerController.SetDirectionIndicatorActive(false);
                 //directionUI.SetActive(false);
                 break;
         }
@@ -585,7 +683,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-
     public void OnAttackButtonClicked()
     {
         Debug.Log("Attack Button Clicked");
@@ -613,6 +710,8 @@ public class GameManager : MonoBehaviour
         playerController.nextAttackIsMagic = true;
 
     }
+
+
 
 
     void MoveToClickedHighlightedTile()
