@@ -1,0 +1,1579 @@
+fileFormatVersion: 2
+guid: c028bc2acbed5b1428db273eb26ff7ad
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_0
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 326
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2bb1825f68529e4db927eacfbe14f5b
+      internalID: -363813496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_1
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 326
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5c522c7c358cd14597b1339c8706f70
+      internalID: -2091374414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_2
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 326
+        width: 16
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a61147d779f3775449267d640ce48bb2
+      internalID: 1200442721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_3
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 326
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28f8136424fd89c4785632141d4e98da
+      internalID: 601767970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_4
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 326
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77945cbe023207545b7b238a943e2c04
+      internalID: 255718811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_5
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 326
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 457cde63e4e231e409a92b1076a876c9
+      internalID: 1461857677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_6
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 326
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59537e44a0f1d804697e5c324142258f
+      internalID: 1387879457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_7
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 326
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05bfad5306ee401488093f43b0fa2212
+      internalID: 1350288339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_8
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 278
+        width: 16
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81d247a67a083a1408c1d08a90fe3933
+      internalID: -26443138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_9
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 279
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d7f482291b8e1e47b2ebf91fcdc82a7
+      internalID: 1834635030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_10
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 278
+        width: 15
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19ef68c2f8eb2f740a11f4a7140cd7ae
+      internalID: -465935293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_11
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 279
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e45c7816a92f1354f9f808d3d91c5eda
+      internalID: -1004665702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_12
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 279
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef52a71b294a1674081298e876057bc9
+      internalID: 1446368115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_13
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 280
+        width: 16
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1097df0db9c36fd46bc55866d084444c
+      internalID: 902481029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_14
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 278
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6462a5b7237131c4f9eea9f342323937
+      internalID: 251606099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_15
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 279
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e665e684f4494b4eb6a9abca7668921
+      internalID: -334421690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_16
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 278
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79e40f3549dba77479ad3e96e78e4208
+      internalID: 1710560554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_17
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 278
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b2fc6e56c96ca54aa8a23ff5e84e8a8
+      internalID: 556236084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_18
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 278
+        width: 16
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce336ec11f1ee8340988d9cefb428834
+      internalID: 989107034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_19
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 278
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1c7468b8e9ea554fa002aec1cbb4bdb
+      internalID: -756629852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_20
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 237
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64be79eaf942a504989759de4457aea4
+      internalID: 1099094400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_21
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 237
+        width: 16
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea3fa7e06ea0a1e438b43afe0a6df7a3
+      internalID: 1674768759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_22
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 237
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71063943080d01b4491f1c5ccf137a7c
+      internalID: -860196221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_23
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 237
+        width: 16
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e039a2fd513e734a8edc8fd04b5f85f
+      internalID: -1128752050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_24
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 235
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d44aba1593b22647977bdf0b7bdce01
+      internalID: -389756110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_25
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 235
+        width: 15
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5657c0d5d49e9054d9cb33b1bb1da834
+      internalID: -2010612010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_26
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 235
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7ae60dd9f5ffaa4db66ac65817d5ca0
+      internalID: -468666097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_27
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 235
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cdc1db9613bfe04892c92adc758186d
+      internalID: -101247697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_28
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 235
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f4ca981db5188b4cafe88da9cd1ac55
+      internalID: -824594936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_29
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 235
+        width: 16
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5232f04bc6b93f6409687e9189739a6d
+      internalID: -1380206467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_30
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 197
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 881fc295663f46f4e87538760b73cd7e
+      internalID: 1777215464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_31
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 195
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68c07af1014ffa940b269fec6a2b9c4b
+      internalID: 214384856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_32
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 155
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 110fc30595f11b64297644b96441a579
+      internalID: -1553996504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_33
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 155
+        width: 15
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac382025c4b214c438d092f117f482e4
+      internalID: -568760256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_34
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 156
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cad1537e7215104f9d476ba69b804d7
+      internalID: -1601479181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_35
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 155
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d27a2008fe02d948820513edc5381f8
+      internalID: 1510966519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_36
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 155
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07f5fba86e39dd84d84c0cb06ada4bf0
+      internalID: -1993854319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_37
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 153
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9022e4c4c6bbbbd4899ed9208a7ed2b1
+      internalID: -3735279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_38
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 153
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 363f46c99454ec34086da9ba72359817
+      internalID: -1800685479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_39
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 153
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ddf07789ddd7d3448ea14af6767651c
+      internalID: -906195770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_40
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 153
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 055d42cc315a4eb4bbce1d07bb81aca2
+      internalID: 374887383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_41
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 111
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae4b319e95a7f96429ded05607ab49c7
+      internalID: -1078244487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_42
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 110
+        width: 15
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3df96fc386158a4428904ce91cab18a1
+      internalID: 563431900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_43
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 108
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72c41c6605168774fac26987a4f2fc0b
+      internalID: 1706680394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_44
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 108
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6c20f75b801f31488ed7dd28ef82d9e
+      internalID: 305462865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_45
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 106
+        width: 16
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 920166290eb8d5f4aac08932bff349bb
+      internalID: 929876836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_46
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 107
+        width: 16
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5775c96e10e7b54a89ae2737fed62ef
+      internalID: 1163008752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_47
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 63
+        width: 15
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a7277afc61966d479c06a72b834b6eb
+      internalID: 378357255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_48
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 63
+        width: 18
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 269c9f34cbbc82840ab9accadba6f045
+      internalID: -1418094101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_49
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 63
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4af5d9b11f8db4a49a85517d35e568b0
+      internalID: 1405416955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_50
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 62
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86e7377ef7044a74289810a2a2241fd4
+      internalID: -380494177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_51
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 62
+        width: 18
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ec34f510a24b114fb6c3869ebd57b8f
+      internalID: -896512181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_52
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 62
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8cec5f724b29a24a966db55c56b7688
+      internalID: 1972436747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_53
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 14
+        width: 15
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86aa361d61317f34b915249efd3116d0
+      internalID: 1429459942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_54
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 14
+        width: 15
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b14295553202c4f44996432dbb7dda99
+      internalID: 1396453827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_55
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 14
+        width: 15
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fafdb797424d08f4aaff52e389914798
+      internalID: -1465888539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_56
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 14
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd8737336d146ca4db960ab7aeec4501
+      internalID: 20200361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_57
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 14
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a0e2c4d66c8e8247bd1a3a78b8071c6
+      internalID: 183359704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_58
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 14
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 951d20474ddf5a84c850dacb9c488d5d
+      internalID: -1313959148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_59
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 14
+        width: 15
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6031c2eda3517b940a36f9b7e4e9f5d0
+      internalID: 1386412602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_60
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 14
+        width: 15
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a0bbfa54ed156b43b4f598f22b02c87
+      internalID: 429040161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_61
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 14
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc824df3c8f5e014c995af7a667225e7
+      internalID: 1797974581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_62
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 14
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 176045f998c266441bd325bfb2bbcd7c
+      internalID: 664823610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_63
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 14
+        width: 16
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a43ba481f50d2c46aabfc2d6fe030bf
+      internalID: -631063172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_64
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 14
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e34ceb6bbaf733a41b8559115156310a
+      internalID: -1038997715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy_Blue_Mage_65
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 16
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea95e93b430c7874a80afd11e3012796
+      internalID: 1090907150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Enemy_Blue_Mage_0: -363813496
+      Enemy_Blue_Mage_1: -2091374414
+      Enemy_Blue_Mage_10: -465935293
+      Enemy_Blue_Mage_11: -1004665702
+      Enemy_Blue_Mage_12: 1446368115
+      Enemy_Blue_Mage_13: 902481029
+      Enemy_Blue_Mage_14: 251606099
+      Enemy_Blue_Mage_15: -334421690
+      Enemy_Blue_Mage_16: 1710560554
+      Enemy_Blue_Mage_17: 556236084
+      Enemy_Blue_Mage_18: 989107034
+      Enemy_Blue_Mage_19: -756629852
+      Enemy_Blue_Mage_2: 1200442721
+      Enemy_Blue_Mage_20: 1099094400
+      Enemy_Blue_Mage_21: 1674768759
+      Enemy_Blue_Mage_22: -860196221
+      Enemy_Blue_Mage_23: -1128752050
+      Enemy_Blue_Mage_24: -389756110
+      Enemy_Blue_Mage_25: -2010612010
+      Enemy_Blue_Mage_26: -468666097
+      Enemy_Blue_Mage_27: -101247697
+      Enemy_Blue_Mage_28: -824594936
+      Enemy_Blue_Mage_29: -1380206467
+      Enemy_Blue_Mage_3: 601767970
+      Enemy_Blue_Mage_30: 1777215464
+      Enemy_Blue_Mage_31: 214384856
+      Enemy_Blue_Mage_32: -1553996504
+      Enemy_Blue_Mage_33: -568760256
+      Enemy_Blue_Mage_34: -1601479181
+      Enemy_Blue_Mage_35: 1510966519
+      Enemy_Blue_Mage_36: -1993854319
+      Enemy_Blue_Mage_37: -3735279
+      Enemy_Blue_Mage_38: -1800685479
+      Enemy_Blue_Mage_39: -906195770
+      Enemy_Blue_Mage_4: 255718811
+      Enemy_Blue_Mage_40: 374887383
+      Enemy_Blue_Mage_41: -1078244487
+      Enemy_Blue_Mage_42: 563431900
+      Enemy_Blue_Mage_43: 1706680394
+      Enemy_Blue_Mage_44: 305462865
+      Enemy_Blue_Mage_45: 929876836
+      Enemy_Blue_Mage_46: 1163008752
+      Enemy_Blue_Mage_47: 378357255
+      Enemy_Blue_Mage_48: -1418094101
+      Enemy_Blue_Mage_49: 1405416955
+      Enemy_Blue_Mage_5: 1461857677
+      Enemy_Blue_Mage_50: -380494177
+      Enemy_Blue_Mage_51: -896512181
+      Enemy_Blue_Mage_52: 1972436747
+      Enemy_Blue_Mage_53: 1429459942
+      Enemy_Blue_Mage_54: 1396453827
+      Enemy_Blue_Mage_55: -1465888539
+      Enemy_Blue_Mage_56: 20200361
+      Enemy_Blue_Mage_57: 183359704
+      Enemy_Blue_Mage_58: -1313959148
+      Enemy_Blue_Mage_59: 1386412602
+      Enemy_Blue_Mage_6: 1387879457
+      Enemy_Blue_Mage_60: 429040161
+      Enemy_Blue_Mage_61: 1797974581
+      Enemy_Blue_Mage_62: 664823610
+      Enemy_Blue_Mage_63: -631063172
+      Enemy_Blue_Mage_64: -1038997715
+      Enemy_Blue_Mage_65: 1090907150
+      Enemy_Blue_Mage_7: 1350288339
+      Enemy_Blue_Mage_8: -26443138
+      Enemy_Blue_Mage_9: 1834635030
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

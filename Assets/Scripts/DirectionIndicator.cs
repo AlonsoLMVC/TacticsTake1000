@@ -20,30 +20,41 @@ public class DirectionIndicator : MonoBehaviour
 
     public void SetEnlargedSphere(Vector2 direction)
     {
-        if (spheres.Length == 0) return;
+        // Convert the input direction to match the expected coordinate system
+        direction = new Vector2(direction.x, -direction.y).normalized; // Invert Y-axis
 
-        GameObject targetSphere = null;
-        float bestDot = -Mathf.Infinity;
+        float closestDot = -1f; // Lowest possible dot product
+        GameObject closestSphere = null;
 
-        foreach (GameObject sphere in spheres)
+        for (int i = 0; i < directions.Length; i++)
         {
-            Vector3 localPos = transform.InverseTransformPoint(sphere.transform.position);
-            Vector2 sphereDirection = new Vector2(localPos.x, localPos.z).normalized;
+            Vector2 sphereDirection = directions[i].normalized;
 
-            float dotProduct = Vector2.Dot(direction.normalized, sphereDirection);
+            // Use dot product to find the closest matching direction
+            float dot = Vector2.Dot(direction, sphereDirection);
 
-            if (dotProduct > bestDot)
+            if (dot > closestDot)
             {
-                bestDot = dotProduct;
-                targetSphere = sphere;
+                closestDot = dot;
+                closestSphere = spheres[i];
             }
         }
 
-        // Update enlarged sphere
-        currentEnlargedSphere = targetSphere;
+        // If we found a matching sphere
+        if (closestSphere != null)
+        {
+            // Reset the previous enlarged sphere
+            if (currentEnlargedSphere != null)
+            {
+                currentEnlargedSphere.transform.localScale = Vector3.one * defaultScale;
+            }
 
-        
+            // Enlarge the new sphere
+            closestSphere.transform.localScale = Vector3.one * enlargedScale;
+            currentEnlargedSphere = closestSphere;
+        }
     }
+
 
     // Get the currently enlarged sphere
     public Transform GetCurrentEnlargedSphere()

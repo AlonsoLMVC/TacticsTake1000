@@ -2,20 +2,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using System.Collections;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
 
 
 
-        public enum GameState
+    public enum GameState
     {
-        MenuNav,       // Navigating menus
-        MoveSelect,    // Selecting where to move
-        DirectionSelect, // Choosing facing direction
-        ChooseTarget,  // Selecting an attack target
-        PreviewAttack, // Previewing attack outcome
-        InAction       // Executing an action
+        DestinationSelect,    // Selecting where to move
+        CommandSelect,
+        TargetSelect,  // Selecting an attack target
+        InAction,   // Executing an action
+        StandbyDirectionSelect, // Choosing facing direction
     }
 
     public GameState currentState;
@@ -29,22 +30,77 @@ public class GameManager : MonoBehaviour
     public float cellSize = 1f;
     public GameObject tilePrefab;
 
+    public int turnCount = 1;
+
     private Node[,] grid;
 
     List<Node> highlightedNodes = new List<Node>();
 
-    public GameObject characterPrefab; // Assign in the Inspector
-    private GameObject playerGameObject;
-    private PlayerController playerController;
+    public GameObject unitPrefab; // Assign in the Inspector
+    public PlayerController playerController;
     public GameObject cubePrefab;
+    public GameObject fillerCubePrefab;
+    public GameObject scrollCellPrefab;
 
-    public GameObject uiManagerObject;
+    public UIManager uiManager;
     public GameObject compassGameObject;
+
+    public List<Unit> units;
+
+    private TurnCalculator turnCalculator;
+    private List<ScrollCell> scrollCells = new List<ScrollCell>();
+    public GameObject scrollParent;
+
+    public GameObject scrollBar;
 
     private void Start()
     {
+        units = new List<Unit>();
+
         GenerateGrid();
-        SpawnCharacter();
+
+
+
+        units.Add(SpawnUnitWithJobAndAllegiance("Archer", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Black Mage", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Blue Mage", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Fighter", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Hunter", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Illusionist", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Ninja", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Paladin", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Soldier", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("Thief", true));
+        units.Add(SpawnUnitWithJobAndAllegiance("White Mage", true));
+
+        
+
+        turnCalculator = new TurnCalculator();
+        turnCalculator.generateTurnOrder(units);
+
+        playerController.currentUnit = turnCalculator.turnOrder[0];
+        turnCalculator.turnOrder.RemoveAt(0);
+
+        for (int i = 0; i < turnCalculator.turnOrder.Count; i++)
+        {
+            Unit unit = turnCalculator.turnOrder[i];
+
+            // Instantiate a new ScrollCell
+            GameObject newCell = Instantiate(scrollCellPrefab, scrollParent.transform);
+
+            // Get the ScrollCell script component
+            ScrollCell cell = newCell.GetComponent<ScrollCell>();
+
+            if (cell != null)
+            {
+                // Set unit data (unit and turn order number)
+                cell.SetUnitData(unit, i + 2);
+                scrollCells.Add(cell);
+            }
+        }
+
+        
+
 
         // Pass grid size to CameraController
         CameraController cameraController = FindObjectOfType<CameraController>();
@@ -54,36 +110,285 @@ public class GameManager : MonoBehaviour
             cameraController.gridHeight = height;
         }
 
-        
-        currentState = GameState.MenuNav;
-        ChangeState(GameState.MenuNav);
+
+
+        StartCoroutine(ExecuteAfterDelay());
+
+
+
+
+        /*
+         * 
+         * NEW FEATURE ALERT
+         * 
+         * 
+         */
+
+        InitializePathLineRenderer();
+
 
     }
+    private LineRenderer pathLineRenderer;
+    private void InitializePathLineRenderer()
+    {
+        GameObject lineObject = new GameObject("PathLine");
+        pathLineRenderer = lineObject.AddComponent<LineRenderer>();
+
+        pathLineRenderer.startWidth = 0.1f;
+        pathLineRenderer.endWidth = 0.1f;
+        pathLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        pathLineRenderer.positionCount = 0;
+    }
+
+    private void UpdatePathVisualization()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            GameObject hoveredObject = hit.collider.gameObject;
+
+            foreach (Node node in grid)
+            {
+                if (node.tileObject == hoveredObject && node.isHighlighted)
+                {
+                    List<Node> path = pathfinding.FindPath(
+                        new Vector2Int(playerController.currentUnit.currentNode.x, playerController.currentUnit.currentNode.y),
+                        new Vector2Int(node.x, node.y)
+                    );
+
+                    if (path != null && path.Count > 0)
+                    {
+                        DrawPathLine(path);
+                    }
+                    else
+                    {
+                        ClearPathLine();
+                    }
+                    return; // Exit early since we found a valid node
+                }
+            }
+        }
+
+        // Clear path if no valid tile is found
+        ClearPathLine();
+    }
+
+    private void DrawPathLine(List<Node> path)
+    {
+        if (path == null || path.Count == 0) return;
+
+        List<Vector3> linePositions = new List<Vector3>();
+
+        // Add the player's current node to the beginning of the path
+        List<Node> fullPath = new List<Node> { playerController.currentUnit.currentNode };
+        fullPath.AddRange(path);
+
+        for (int i = 0; i < fullPath.Count; i++)
+        {
+            Node currentNode = fullPath[i];
+            Vector3 currentPos = currentNode.tileObject.transform.position;
+            currentPos.y += (currentNode.tileObject.transform.localScale.y / 2) + 0.1f; // Ensure the line is on top
+
+            if (i == 0)
+            {
+                linePositions.Add(currentPos);
+                continue; // First node is just added, no transitions needed
+            }
+
+            Node prevNode = fullPath[i - 1];
+            Vector3 prevPos = prevNode.tileObject.transform.position;
+            prevPos.y += (prevNode.tileObject.transform.localScale.y / 2) + 0.1f; // Ensure previous node is correct
+
+            // Detect height difference using altitude
+            if (Mathf.Abs(currentNode.altitude - prevNode.altitude) >= prevNode.tileObject.transform.localScale.y)
+            {
+                bool goingUp = currentNode.altitude > prevNode.altitude;
+
+                // Dynamically determine where the transition happens based on tile size
+                float transitionOffset = Mathf.Clamp((prevNode.tileObject.transform.localScale.x / 3f), 0.45f, 0.55f);
+                if (!goingUp)
+                    transitionOffset = 1f - transitionOffset; // Flip transition point for downward movement
+
+                // Step 1: Move horizontally before or after the middle of the tile
+                Vector3 midPoint1 = new Vector3(
+                    Mathf.Lerp(prevPos.x, currentPos.x, transitionOffset),
+                    prevPos.y, // Stay at the first tile's height
+                    Mathf.Lerp(prevPos.z, currentPos.z, transitionOffset)
+                );
+                linePositions.Add(midPoint1);
+
+                // Step 2: Move vertically to the new height
+                Vector3 midPoint2 = new Vector3(
+                    midPoint1.x,
+                    currentPos.y, // Move up/down to the second tile's height
+                    midPoint1.z
+                );
+                linePositions.Add(midPoint2);
+            }
+
+            // Step 3: Move horizontally to the next tile
+            linePositions.Add(currentPos);
+        }
+
+        // Apply positions to the LineRenderer
+        pathLineRenderer.positionCount = linePositions.Count;
+        pathLineRenderer.SetPositions(linePositions.ToArray());
+    }
+
+
+
+
+
+
+
+
+
+
+
+    private void ClearPathLine()
+    {
+        pathLineRenderer.positionCount = 0;
+    }
+
+
+
+
+    /*
+         * 
+         * NEW FEATURE ALERT
+         * 
+         * 
+         */
+
+
+
+    public void startNewTurnWith(Unit newUnit)
+    {
+
+        Debug.Log($"Switching unit to: {newUnit?.Job ?? "NULL"}");
+
+        playerController.SetDirectionIndicatorActive(false);
+
+        uiManager.profilePicturePanel.SetProfileImage(newUnit.displaySprite);
+        uiManager.profilePicturePanel.SetLevelText(newUnit.Level);
+
+        uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.currentHP, newUnit.maxHP);
+
+
+
+
+        if (turnCount == 1)
+        {
+            turnCount++;
+            return;
+        }
+
+
+
+        playerController.currentUnit.hasActed = false;
+        playerController.currentUnit.hasMoved = false;
+
+        playerController.currentUnit = newUnit;
+
+
+        
+
+
+        //we need to generate a new scroll cell and get rid of the last one
+        Debug.Log(scrollCells[0] + "----------------------------------------------------------");
+        Destroy(scrollCells[0].gameObject);
+        scrollCells.RemoveAt(0);
+
+        
+        //update the turn order for the cells
+        foreach(ScrollCell c in scrollCells)
+        {
+            c.setTurnOrder(int.Parse(c.turnOrderText.text) - 1);
+        }
+
+        // Instantiate a new ScrollCell
+        GameObject newCell = Instantiate(scrollCellPrefab, scrollParent.transform);
+
+        // Get the ScrollCell script component
+        ScrollCell cell = newCell.GetComponent<ScrollCell>();
+
+        if (cell != null)
+        {
+            // Set unit data (unit and turn order number)
+            cell.SetUnitData(turnCalculator.getNextUnit(units), 30);
+            scrollCells.Add(cell);
+        
+        }
+
+        ChangeState(GameState.DestinationSelect);
+
+
+    }
+
+
+    IEnumerator ExecuteAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+
+        Debug.Log(playerController == null);
+        Debug.Log(playerController.currentUnit == null);
+        startNewTurnWith(playerController.currentUnit);
+
+        scrollBar.GetComponent<Scrollbar>().value = 0;
+
+        foreach (Unit u in units)
+        {
+            u.directionFacing = new Vector2(0, 1);
+            u.updateSpriteRotation();
+        }
+
+
+        playerController.setDirectionFacing(new Vector2(0, 1));
+        Debug.Log("Executed after 2 seconds");
+
+        ChangeState(GameState.DestinationSelect);
+    }
+
 
     private void Update()
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        if (currentState == GameState.ChooseTarget || currentState == GameState.MoveSelect || currentState == GameState.DirectionSelect)
+        UpdatePathVisualization(); // Runs separately from other logic
+
+
+        if (currentState == GameState.TargetSelect || currentState == GameState.DestinationSelect || currentState == GameState.StandbyDirectionSelect)
         {
             //ChangeState(GameState.InAction);
             vocalTiles();
             //AttackClickedHighlightTile();
         }
 
-        if (Input.GetMouseButtonDown(0)){
+        if (Input.GetMouseButtonDown(0))
+        {
 
-            if (currentState == GameState.MoveSelect) // Left Click for obstacles
+            if (currentState == GameState.DestinationSelect) // Left Click for obstacles
             {
                 MoveToClickedHighlightedTile();
             }
-            else if(currentState == GameState.DirectionSelect){
-                ChangeState(GameState.MenuNav);
+            else if (currentState == GameState.StandbyDirectionSelect)
+            {
+
+                startNewTurnWith(scrollCells[0].unit);
+                
+
+                //this happens after a move action, or after an attack that has already moved.
+
+
+
             }
-            else if(currentState == GameState.ChooseTarget)
+
+            else if (currentState == GameState.TargetSelect)
             {
                 //ChangeState(GameState.InAction);
-                
+
                 AttackClickedHighlightTile();
             }
 
@@ -93,8 +398,8 @@ public class GameManager : MonoBehaviour
 
 
 
-        
-        
+
+
         if (Input.GetKeyDown(KeyCode.R)) // Reset scene
         {
             ReloadScene();
@@ -115,14 +420,15 @@ public class GameManager : MonoBehaviour
             {
                 if (node.tileObject == hoveredObject)
                 {
-                    Debug.Log("Hovered node is " + node.x + ", " + node.y);
-                    Debug.Log("Current node is " + playerController.currentNode);
+                    //Debug.Log("Hovered node is " + node.x + ", " + node.y);
+                    //Debug.Log("Current node is " + playerController.currentNode);
 
                     Vector2 newDirectionToFace = compassGameObject.GetComponent<Compass>()
-                        .GetClosestGridDirection(playerController.currentNode.getGridCoordinates(), node.getGridCoordinates());
+                        .GetClosestGridDirection(playerController.currentUnit.currentNode.getGridCoordinates(), node.getGridCoordinates());
 
-                    playerGameObject.GetComponent<PlayerController>().setDirectionFacing(newDirectionToFace);
-                    playerGameObject.GetComponent<PlayerController>().setIndicatorDirectionFacing(newDirectionToFace);
+
+                    playerController.setDirectionFacing(newDirectionToFace);
+                    playerController.setIndicatorDirectionFacing(newDirectionToFace);
 
 
 
@@ -153,28 +459,29 @@ public class GameManager : MonoBehaviour
         // Turn off UI elements when leaving a state
         switch (state)
         {
-            case GameState.MenuNav:
-                //menuUI.SetActive(false);
-                uiManagerObject.GetComponent<UIManager>().setActionPanelActive(false);
-                uiManagerObject.GetComponent<UIManager>().setMainPanelActive(false);
-                break;
-            case GameState.MoveSelect:
+
+            case GameState.DestinationSelect:
                 //moveSelectionUI.SetActive(false);
                 break;
-            case GameState.DirectionSelect:
-                playerController.SetDirectionIndicatorActive(false);
+            case GameState.CommandSelect:
+                
+
                 //directionUI.SetActive(false);
                 break;
-            case GameState.ChooseTarget:
+            case GameState.TargetSelect:
+
                 //attackTargetUI.SetActive(false);
                 break;
-            case GameState.PreviewAttack:
-                //attackPreviewUI.SetActive(false);
-                break;
             case GameState.InAction:
+
                 //actionExecutionUI.SetActive(false);
                 break;
+            case GameState.StandbyDirectionSelect:
+
+                //directionUI.SetActive(false);
+                break;
         }
+
     }
 
     private void OnEnterState(GameState state)
@@ -182,43 +489,57 @@ public class GameManager : MonoBehaviour
         // Activate necessary UI elements when entering a new state
         switch (state)
         {
-            case GameState.MenuNav:
-                //menuUI.SetActive(true);
-                uiManagerObject.GetComponent<UIManager>().setActionPanelActive(false);
-                uiManagerObject.GetComponent<UIManager>().setMainPanelActive(true);
-                currentState = GameState.MenuNav;
-                break;
-            case GameState.MoveSelect:
+
+            case GameState.DestinationSelect:
                 //moveSelectionUI.SetActive(true);
-                currentState = GameState.MoveSelect;
+
+
+                highlightedNodes = GetReachableTiles(playerController.currentUnit.currentNode, playerController.currentUnit.MoveRange);
+                foreach (Node tile in highlightedNodes)
+                {
+                    tile.SetHighlightVisibility(true);
+                }
+
+
+                uiManager.SetUIState(GameState.DestinationSelect);
+                currentState = GameState.DestinationSelect;
 
                 break;
-            case GameState.DirectionSelect:
-                //directionUI.SetActive(true);
-                playerController.SetDirectionIndicatorActive(true);
-                playerController.directionIndicator.ToggleSpheres(true);
-                currentState = GameState.DirectionSelect;
-
-
-                break;
-            case GameState.ChooseTarget:
-                //attackTargetUI.SetActive(true);
-
-                currentState = GameState.ChooseTarget;
-
-                break;
-            case GameState.PreviewAttack:
+            case GameState.CommandSelect:
                 //attackPreviewUI.SetActive(true);
-                currentState = GameState.PreviewAttack;
+                uiManager.SetUIState(GameState.CommandSelect);
+                currentState = GameState.CommandSelect;
+
+                break;
+            case GameState.TargetSelect:
+                //attackTargetUI.SetActive(true);
+                uiManager.SetUIState(GameState.TargetSelect);
+                currentState = GameState.TargetSelect;
 
                 break;
             case GameState.InAction:
                 //actionExecutionUI.SetActive(true);
+                uiManager.SetUIState(GameState.InAction);
                 currentState = GameState.InAction;
 
                 //ExecuteAction();
                 break;
+            case GameState.StandbyDirectionSelect:
+                //directionUI.SetActive(true);
+                uiManager.SetUIState(GameState.StandbyDirectionSelect);
+                playerController.SetDirectionIndicatorActive(true);
+                playerController.currentUnit.gameObject.GetComponent<Unit>().directionIndicator.ToggleSpheres(true);
+                currentState = GameState.StandbyDirectionSelect;
+
+
+                break;
+
+
+
         }
+
+
+
     }
 
 
@@ -234,14 +555,13 @@ public class GameManager : MonoBehaviour
     private void FinishAction()
     {
         Debug.Log("Action completed! Returning to menu navigation.");
-        ChangeState(GameState.MenuNav);
+        //ChangeState(GameState.MenuNav);
     }
 
 
 
 
-
-    void SpawnCharacter()
+    Unit SpawnUnitWithJobAndAllegiance(string job, bool isAllied)
     {
         List<Node> walkableTiles = new List<Node>();
         foreach (Node node in grid)
@@ -250,28 +570,37 @@ public class GameManager : MonoBehaviour
                 walkableTiles.Add(node);
         }
 
-        if (walkableTiles.Count == 0) return;
+        if (walkableTiles.Count == 0) return null;
 
         // Pick a random walkable tile
-        Node spawnTile = walkableTiles[Random.Range(0, walkableTiles.Count)];
+        Node spawnNode = walkableTiles[Random.Range(0, walkableTiles.Count)];
 
-        float tileHeight = spawnTile.tileObject.transform.localScale.y; // Get the cube's height
+        float tileHeight = spawnNode.tileObject.transform.localScale.y; // Get the cube's height
         float characterHeight = 1f; // Change this based on your character's height
         float placementOffset = (tileHeight / 2f) + (characterHeight / 2f); //  Adjust for tile & character height
 
-        Vector3 spawnPosition = new Vector3(spawnTile.x, spawnTile.tileObject.transform.position.y +  placementOffset, spawnTile.y); // XZ plane with correct Y height
+        Vector3 spawnPosition = new Vector3(spawnNode.x, spawnNode.tileObject.transform.position.y + placementOffset, spawnNode.y); // XZ plane with correct Y height
 
         // Instantiate the character
-        playerGameObject = Instantiate(characterPrefab, spawnPosition, Quaternion.identity);
-        playerController = playerGameObject.GetComponent<PlayerController>();
+        Unit newUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity).GetComponent<Unit>();
 
-        Debug.Log("Spawn tile is " + spawnTile.x + ", " + spawnTile.y);
-        playerController.currentNode = spawnTile;
+        newUnit.setJobandAllegianceAndInitialize(job, isAllied);
+        newUnit.uiManager = uiManager;
+
+
+        //Debug.Log("Spawn tile is " + spawnNode.x + ", " + spawnNode.y);
+        newUnit.currentNode = spawnNode;
         playerController.placementOffset = placementOffset;
 
-        Camera.main.GetComponent<CameraController>().assignPlayer(playerGameObject);
+        Camera.main.GetComponent<CameraController>().assignPlayer(newUnit.gameObject);
 
-        playerController.assignStartingUnit(playerGameObject);
+
+        spawnNode.isWalkable = false;
+        spawnNode.hasUnitOnTile = true;
+
+
+        return newUnit;
+
     }
 
 
@@ -303,23 +632,42 @@ public class GameManager : MonoBehaviour
                     float yPos = (i * cubeHeight) + (cubeHeight / 2f); // Centers cube on Y
 
                     Vector3 position = new Vector3(x, yPos, y);
-                    GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity);
+                    GameObject cube;
+
+                    if (i == altitude - 1)
+                    {
+                        cube = Instantiate(cubePrefab, position, Quaternion.identity);
+                        topCube = cube;
+                        cube.GetComponent<Node>().setValues(x, y, true, topCube, altitude);
+                        cube.GetComponent<Node>().gameManager = this;
+                        cube.GetComponent<Node>().playerController = playerController;
+                        cube.GetComponent<Node>().uiManager = uiManager;
+                        grid[x, y] = cube.GetComponent<Node>();
+
+
+                    }
+                    else
+                    {
+                        cube = Instantiate(fillerCubePrefab, position, Quaternion.identity);
+                    }
+
+
+
+
 
                     cube.name = $"Cube {x},{y},{i}";
 
                     // Store the top cube only
-                    if (i == altitude - 1)
-                    {
-                        topCube = cube;
-                    }
-                }
 
+                }
+                /*
                 // Add only the top cube to the grid
                 if (topCube != null)
                 {
                     grid[x, y] = new Node(x, y, true, topCube, altitude);
                     
                 }
+                */
             }
         }
     }
@@ -329,21 +677,11 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Move Button Clicked");
 
-        highlightSurroundingTiles(playerController.move);
-        ChangeState(GameState.MoveSelect);
+        highlightSurroundingTiles(playerController.currentUnit.gameObject.GetComponent<Unit>().MoveRange);
+        ChangeState(GameState.DestinationSelect);
 
 
     }
-
-    public void OnActButtonClicked()
-    {
-        Debug.Log("Act Button Clicked");
-
-        uiManagerObject.GetComponent<UIManager>().setActionPanelActive(true);
-
-
-    }
-
 
     public void OnAttackButtonClicked()
     {
@@ -353,8 +691,9 @@ public class GameManager : MonoBehaviour
         //honestly for now we are going to use just the surrounding tiles for possible attack tiles
         highlightSurroundingTiles(1);
 
-        ChangeState(GameState.ChooseTarget);
-      
+        ChangeState(GameState.TargetSelect);
+
+        playerController.nextAttackIsMagic = false;
 
     }
 
@@ -366,10 +705,13 @@ public class GameManager : MonoBehaviour
         //honestly for now we are going to use just the surrounding tiles for possible attack tiles
         highlightSurroundingTiles(3);
 
-        ChangeState(GameState.ChooseTarget);
+        ChangeState(GameState.TargetSelect);
 
+        playerController.nextAttackIsMagic = true;
 
     }
+
+
 
 
     void MoveToClickedHighlightedTile()
@@ -386,13 +728,14 @@ public class GameManager : MonoBehaviour
             {
                 if (node.tileObject == clickedObject)
                 {
-                    
 
-                    if(node.isHighlighted){
+
+                    if (node.isHighlighted)
+                    {
                         MoveCharacterToNode(node);
 
                     }
-                    
+
 
                     break;
 
@@ -411,23 +754,28 @@ public class GameManager : MonoBehaviour
         {
             GameObject clickedObject = hit.collider.gameObject;
 
-            // Check if the clicked object is a tile
+            Debug.Log("Clicked: " + clickedObject.name);
+
+            // Check if it's a Tile
             foreach (Node node in grid)
             {
                 if (node.tileObject == clickedObject)
                 {
-
-
                     if (node.isHighlighted)
                     {
                         playerController.attack();
-
                     }
-
-
-                    break;
-
+                    return; // Stop checking once we find a match
                 }
+            }
+
+            // Check if it's part of a Unit
+            Unit clickedUnit = hit.collider.GetComponentInParent<Unit>();
+            if (clickedUnit != null)
+            {
+                Debug.Log("Clicked a unit: " + clickedUnit.name);
+                playerController.attack();
+                return; // Prevent unnecessary extra checks
             }
         }
     }
@@ -439,10 +787,10 @@ public class GameManager : MonoBehaviour
     public void highlightSurroundingTiles(int move)
     {
         Debug.Log("click");
-        PlayerController cc = playerGameObject.GetComponent<PlayerController>();
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
 
         List<Node> list = new List<Node>();
-        list.Add(cc.currentNode);
+        list.Add(pc.currentUnit.currentNode);
         //Debug.Log(cc.currentNode);
         list = getAreaAroundNodes(move, list);
 
@@ -450,17 +798,21 @@ public class GameManager : MonoBehaviour
         foreach (Node highlightNode in list)
         {
             //Don't highlight the node the player is on
-            if (highlightNode == cc.currentNode) continue;
+            if (highlightNode == pc.currentUnit.currentNode) continue;
 
             highlightedNodes.Add(highlightNode);
-            highlightNode.ToggleHighlight();
+            highlightNode.SetHighlightVisibility(true);
+            highlightNode.isHighlighted = true;
+
         }
     }
 
-    public void clearHighlightedTiles(){
+    public void clearHighlightedTiles()
+    {
 
-        foreach (Node node in highlightedNodes){
-            node.ToggleHighlight();
+        foreach (Node node in highlightedNodes)
+        {
+            node.SetHighlightVisibility(false);
         }
 
         highlightedNodes.Clear();
@@ -504,14 +856,14 @@ public class GameManager : MonoBehaviour
 
     void MoveCharacterToNode(Node targetNode)
     {
-        
+
         if (playerController == null || playerController.IsMoving) return; // Prevent movement mid-action
         GameObject clickedObject = targetNode.tileObject;
 
-        
-        if(targetNode.isWalkable)
+
+        if (targetNode.isWalkable)
         {
-            Vector3 characterPos = playerGameObject.transform.position;
+            Vector3 characterPos = playerController.currentUnit.gameObject.transform.position;
 
             // Ensure movement is on the correct Y level (top of the tile)
             float tileHeight = targetNode.tileObject.transform.localScale.y;
@@ -526,9 +878,9 @@ public class GameManager : MonoBehaviour
             {
                 playerController.SetPath(path);
             }
-                    
+
         }
-      
+
     }
 
 
@@ -620,7 +972,47 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public List<Node> GetReachableTiles(Node startNode, int moves)
+    {
+        List<Node> reachableTiles = new List<Node>();
+        Dictionary<Node, int> moveCostMap = new Dictionary<Node, int>(); // Track remaining moves per node
 
+        Queue<(Node node, int remainingMoves)> frontier = new Queue<(Node, int)>();
+        frontier.Enqueue((startNode, moves));
+        moveCostMap[startNode] = moves;
+
+        while (frontier.Count > 0)
+        {
+            var (currentNode, remainingMoves) = frontier.Dequeue();
+
+            if (remainingMoves <= 0) continue; // Stop if no moves left
+
+            foreach (Node neighbor in GetNeighbors(currentNode))
+            {
+                if (!neighbor.isWalkable) continue; // Skip unwalkable tiles
+
+                int costToEnter = 1; // Modify if different terrain has different costs
+                int newRemainingMoves = remainingMoves - costToEnter;
+
+                if (!moveCostMap.ContainsKey(neighbor) || newRemainingMoves > moveCostMap[neighbor])
+                {
+                    moveCostMap[neighbor] = newRemainingMoves;
+                    reachableTiles.Add(neighbor);
+                    frontier.Enqueue((neighbor, newRemainingMoves));
+                }
+            }
+        }
+
+        return reachableTiles;
+    }
+
+
+
+    public void endAttack()
+    {
+
+        ChangeState(GameManager.GameState.StandbyDirectionSelect);
+    }
 
 
 }

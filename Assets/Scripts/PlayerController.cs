@@ -11,13 +11,9 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
 
     public bool IsMoving => isMoving;
-
-    public Node currentNode; //  Stores the node the character is currently standing on
-
-    public int move = 4;
+ //  Stores the node the character is currently standing on
 
     public float placementOffset;
-    public DirectionIndicator directionIndicator;
 
     private Vector3 moveDirection;
 
@@ -25,8 +21,13 @@ public class PlayerController : MonoBehaviour
 
     private GameManager gameManager;
 
-    public GameObject currentUnitGameObject;
+    public UIManager uiManager;
 
+    public Unit currentUnit;
+
+    public Node currentHoveredNode;
+
+    public bool nextAttackIsMagic;
 
 
     private void Start()
@@ -39,10 +40,8 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public void assignStartingUnit(GameObject startingUnit)
-    {
-        currentUnitGameObject = startingUnit;
-    }
+
+
 
 
     private void Update()
@@ -57,14 +56,14 @@ public class PlayerController : MonoBehaviour
 
     public void setDirectionFacing(Vector2 newDirection)
     {
-        currentUnitGameObject.GetComponent<Unit>().directionFacing = newDirection;
-        currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
+        currentUnit.directionFacing = newDirection;
+        currentUnit.updateSpriteRotation();
     }
 
-    public void setIndicatorDirectionFacing(Vector2 newDirection)
+ public void setIndicatorDirectionFacing(Vector2 newDirection)
     {
-        directionIndicator.SetEnlargedSphere(newDirection);
-    }
+        currentUnit.directionIndicator.SetEnlargedSphere(newDirection);
+    }   
 
 
 
@@ -86,9 +85,9 @@ public class PlayerController : MonoBehaviour
     public void SetDirectionIndicatorActive(bool isActive)
     {
         //Debug.Log("setting direction indicator to " + isActive);
-        if (directionIndicator != null)
+        if (currentUnit.directionIndicator != null)
         {
-            directionIndicator.gameObject.SetActive(isActive);
+            currentUnit.directionIndicator.gameObject.SetActive(isActive);
         }
     }
 
@@ -106,23 +105,28 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        if (!isMoving && gameManager.currentState == GameManager.GameState.MoveSelect) // Only start if not already moving
+        if (!isMoving && gameManager.currentState == GameManager.GameState.DestinationSelect) // Only start if not already moving
         {
             
             gameManager.ChangeState(GameManager.GameState.InAction);
             isMoving = true;
 
-            
+            //currentUnit.currentNode.isWalkable = true;
 
-            Vector3 currentPosition = transform.position; 
+            Vector3 currentPosition = currentUnit.gameObject.transform.position; 
             Node targetNode = path[0];
 
-            float currentAltitude = currentNode.altitude;
+            float currentAltitude = currentUnit.currentNode.altitude;
             float targetAltitude = targetNode.altitude;
+
+            //we reset the details of the node the unit is on before it even moves
+            currentUnit.currentNode.isWalkable = true;
+            currentUnit.currentNode.hasUnitOnTile = false;
+
 
             //Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
-            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
+            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentUnit.currentNode.tileObject.transform.localScale.y) // Detect height differences
             {
                 //Debug.Log("Height difference detected!");
                 StartCoroutine(PerformJump(targetNode)); // Trigger jump
@@ -142,7 +146,7 @@ public class PlayerController : MonoBehaviour
     {
         isMoving = true;
 
-        Vector3 startPos = transform.position;
+        Vector3 startPos = currentUnit.gameObject.transform.position;
         Vector3 targetPos = new Vector3(targetNode.tileObject.transform.position.x, targetNode.tileObject.transform.position.y + placementOffset, targetNode.tileObject.transform.position.z);
 
         // Update move direction
@@ -153,11 +157,11 @@ public class PlayerController : MonoBehaviour
         Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(xzDir);
         Debug.Log(xzDir.ToString());
 
-        currentUnitGameObject.GetComponent<Unit>().directionFacing = xzDir;
+        currentUnit.directionFacing = xzDir;
 
 
-        currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetFloat("directionX", blendTreeValues.x);
-        currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetFloat("directionZ", blendTreeValues.y);
+        currentUnit.mainAnimator.SetFloat("directionX", blendTreeValues.x);
+        currentUnit.mainAnimator.SetFloat("directionZ", blendTreeValues.y);
 
 
         float jumpDuration = 0.4f;
@@ -181,28 +185,29 @@ public class PlayerController : MonoBehaviour
             float heightOffset = Mathf.Sin(t * Mathf.PI) * jumpHeight; // Sinusoidal arc
 
             // **Combine horizontal and vertical movement**
-            transform.position = new Vector3(horizontalPos.x, horizontalPos.y + heightOffset, horizontalPos.z);
+            currentUnit.gameObject.transform.position = new Vector3(horizontalPos.x, horizontalPos.y + heightOffset, horizontalPos.z);
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         // Ensure correct landing position
-        transform.position = targetPos;
+        currentUnit.gameObject.transform.position = targetPos;
 
         pathIndex++;
-        currentNode = targetNode;
+        currentUnit.currentNode = targetNode;
+
 
         if (pathIndex < path.Count)
         {
-            currentNode = path[pathIndex];
+            currentUnit.currentNode = path[pathIndex];
             //StartCoroutine(MoveToTile(path[pathIndex])); //  Start the next step directly inside this coroutine
-            float currentAltitude = currentNode.altitude;
+            float currentAltitude = currentUnit.currentNode.altitude;
             float targetAltitude = targetNode.altitude;
 
             //Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
-            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
+            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentUnit.currentNode.tileObject.transform.localScale.y) // Detect height differences
             {
                 //Debug.Log("Height difference detected!");
                 StartCoroutine(PerformJump(path[pathIndex])); // Trigger jump
@@ -216,9 +221,15 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = false; //  Only reset when fully finished
 
-            gameManager.ChangeState(GameManager.GameState.DirectionSelect);
+            gameManager.ChangeState(GameManager.GameState.CommandSelect);
 
-            currentNode = targetNode;
+
+            targetNode.isWalkable = false;            
+            currentUnit.currentNode = targetNode;
+            targetNode.hasUnitOnTile = true;
+
+            currentUnit.hasMoved = true;
+
             gameManager.clearHighlightedTiles();
         }
     }
@@ -235,44 +246,44 @@ public class PlayerController : MonoBehaviour
         float targetY = targetNode.tileObject.transform.position.y + placementOffset;
         Vector3 targetPosition = new Vector3(targetNode.x, targetY, targetNode.y);
 
-        moveDirection = (targetPosition - transform.position).normalized;
+        moveDirection = (targetPosition - currentUnit.gameObject.transform.position).normalized;
 
         // Set animation parameters and take into account any kind of camera and compass rotation
         Vector2 xzDir = new Vector2((float)Math.Round(moveDirection.x), (float)Math.Round(moveDirection.z));
         Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(xzDir);
         //Debug.Log(xzDir.ToString());
 
-        currentUnitGameObject.GetComponent<Unit>().directionFacing = xzDir;
+        currentUnit.directionFacing = xzDir;
 
-        currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetFloat("directionX", blendTreeValues.x);
-        currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetFloat("directionZ", blendTreeValues.y);
+        currentUnit.mainAnimator.SetFloat("directionX", blendTreeValues.x);
+        currentUnit.mainAnimator.SetFloat("directionZ", blendTreeValues.y);
 
 
 
         float moveDuration = 0.2f;
         float elapsedTime = 0f;
-        Vector3 startPosition = transform.position;
+        Vector3 startPosition = currentUnit.gameObject.transform.position;
 
         while (elapsedTime < moveDuration)
         {
             elapsedTime += Time.deltaTime;
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveDuration);
+            currentUnit.gameObject.transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveDuration);
             yield return null;
         }
 
-        transform.position = targetPosition;
+        currentUnit.gameObject.transform.position = targetPosition;
         pathIndex++;
 
         if (pathIndex < path.Count)
         {
-            currentNode = path[pathIndex];
+            currentUnit.currentNode = path[pathIndex];
 
-            float currentAltitude = currentNode.altitude;
+            float currentAltitude = currentUnit.currentNode.altitude;
             float targetAltitude = targetNode.altitude;
 
             //Debug.Log($"Altitude Difference: " + (currentAltitude - targetAltitude));
 
-            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentNode.tileObject.transform.localScale.y) // Detect height differences
+            if (Mathf.Abs(targetAltitude - currentAltitude) >= currentUnit.currentNode.tileObject.transform.localScale.y) // Detect height differences
             {
                 //Debug.Log("Height difference detected!");
                 StartCoroutine(PerformJump(path[pathIndex])); // Trigger jump
@@ -285,11 +296,18 @@ public class PlayerController : MonoBehaviour
         else
         {
             isMoving = false; //  Only reset when fully finished
-            currentNode = targetNode;
 
-            gameManager.ChangeState(GameManager.GameState.DirectionSelect);
+            gameManager.ChangeState(GameManager.GameState.CommandSelect);
 
-            GameObject.FindAnyObjectByType<GameManager>().clearHighlightedTiles();
+            //update node walkable information
+            targetNode.isWalkable = false;
+            currentUnit.currentNode = targetNode;
+            targetNode.hasUnitOnTile = true;
+
+            currentUnit.hasMoved = true;
+
+
+            gameManager.clearHighlightedTiles();
 
         }
     }
@@ -299,20 +317,30 @@ public class PlayerController : MonoBehaviour
         gameManager.clearHighlightedTiles();
         //      yield return new WaitForSeconds(1f);
 
-        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(currentUnitGameObject.GetComponent<Unit>().directionFacing);
+        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(currentUnit.directionFacing);
 
-        currentUnitGameObject.GetComponent<Unit>().weaponAnimator.SetFloat("directionX", blendTreeValues.x);
-        currentUnitGameObject.GetComponent<Unit>().weaponAnimator.SetFloat("directionZ", blendTreeValues.y);
+        currentUnit.weaponAnimator.SetFloat("directionX", blendTreeValues.x);
+        currentUnit.weaponAnimator.SetFloat("directionZ", blendTreeValues.y);
 
-        currentUnitGameObject.GetComponent<Unit>().mainAnimator.SetTrigger("attack");
-        currentUnitGameObject.GetComponent<Unit>().weaponAnimator.SetTrigger("attack");
 
+        if (nextAttackIsMagic == false)
+        {
+            currentUnit.mainAnimator.SetTrigger("attack");
+            currentUnit.weaponAnimator.SetTrigger("attack");
+        }
+        else
+        {
+            currentUnit.mainAnimator.SetTrigger("channel");
+        }
+
+        currentUnit.hasActed = true;
 
         //yield return new WaitForSeconds(2.5f);
         
 
         yield return null;
     }
+
 
 
 
@@ -323,12 +351,8 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public void endAttack()
-    {
-        StartCoroutine(ExecuteAttack()); // Trigger jump
 
-        //gameManager.ChangeState(GameManager.GameState.DirectionSelect);
-    }
+
 
 
 

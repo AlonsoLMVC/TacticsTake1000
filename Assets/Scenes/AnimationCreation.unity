@@ -151,15 +151,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d9beb04c8a70fb47a9ba700cfd6d693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterName: Warrior
-  spriteSheet: {fileID: 2800000, guid: 34d57a33bde1a9643a6974ce0d5d5086, type: 3}
+  spritesheetFolder: Assets/Resources/Spritesheets/
   frameDuration: 0.2
+  baseAnimatorController: {fileID: 9100000, guid: 3bf2e8f751beab74587cd9f97b0bc47e, type: 2}
   walkFramesSE_SW: 090000000a0000000b0000000a000000
   walkFramesNE_NW: 0d0000000e0000000f0000000e000000
   attackFramesSE_SW: 30000000310000003200000032000000
   attackFramesNE_NW: 33000000340000003500000035000000
-  channelFramesSE_SW: 0a00000008000000080000000a0000000a000000
-  channelFramesNE_NW: 0e00000013000000130000000e0000000e000000
+  channelFramesSE_SW: 0a00000008000000080000000800000008000000
+  channelFramesNE_NW: 0e0000000c0000000c0000000c0000000c000000
 --- !u!4 &45260677
 Transform:
   m_ObjectHideFlags: 0

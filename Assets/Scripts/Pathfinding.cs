@@ -11,9 +11,12 @@ public class Pathfinding : MonoBehaviour
     {
         Node startNode = gridManager.GetNode(start.x, start.y);
         Node goalNode = gridManager.GetNode(goal.x, goal.y);
-
+        /*
         if (!startNode.isWalkable || !goalNode.isWalkable)
             return null; // No path if start or goal is blocked
+        */
+        if (!goalNode.isWalkable)
+            return null; // No path if goal is blocked
 
         openList = new PriorityQueue<Node>((a, b) => a.fCost.CompareTo(b.fCost));
         closedList = new HashSet<Node>();

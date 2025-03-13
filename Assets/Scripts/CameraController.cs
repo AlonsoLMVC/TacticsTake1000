@@ -20,7 +20,8 @@ public class CameraController : MonoBehaviour
     private Vector3 gridCenter; // Stores the center of the grid
 
     public GameObject compass;
-    private PlayerController playerController;
+    public PlayerController playerController;
+    public GameManager gameManager;
 
     // Variables to store the original camera position, rotation, and zoom
     private Vector3 originalPosition;
@@ -40,19 +41,45 @@ public class CameraController : MonoBehaviour
     }
 
 
+    private Transform lastTarget = null; // Store last target to prevent unnecessary calls
+
     private void Update()
     {
-        HandleMovement();
-        HandleZoom();
         HandleGridRotation();
-        HandlePlayerZoom(); // New function for zooming on player
 
-    if (Input.GetKeyDown(KeyCode.C)) // Press C to center without zooming
+        // Ensure we're not constantly restarting movement to the same target
+        /*
+        if (playerController.currentHoveredNode != null && playerController.currentHoveredNode.transform != lastTarget)
+        {
+            lastTarget = playerController.currentHoveredNode.transform;
+            SmoothFocusOnTarget(lastTarget);
+        }
+        */
+    }
+
+
+
+    public void SmoothFocusOnTarget(Transform target, float duration = 0.5f)
     {
-        CenterCameraOnPlayer();
+        if (target == null || transform.position == target.position) return;
+
+        Debug.Log("Smoothly moving to: " + target.name);
+
+        if (zoomCoroutine != null) StopCoroutine(zoomCoroutine);
+
+        float heightOffset = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+        float distance = Mathf.Max(gridWidth, gridHeight) * 1.2f;
+
+        Vector3 targetPosition = target.position + new Vector3(-distance, heightOffset, -distance);
+        Quaternion targetRotation = Quaternion.Euler(30, 45, 0);
+
+        zoomCoroutine = StartCoroutine(SmoothCameraTransition(targetPosition, targetRotation, cam.orthographicSize, duration));
     }
 
-    }
+
+
+
+
 
     // New method: Centers camera on player without zooming
     public void CenterCameraOnPlayer()
@@ -164,6 +191,7 @@ public class CameraController : MonoBehaviour
             transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
             cam.orthographicSize = Mathf.Lerp(startZoom, targetZoom, t);
 
+
             elapsedTime += Time.deltaTime;
             yield return null;
         }
@@ -195,7 +223,7 @@ public class CameraController : MonoBehaviour
         // Adjust orthographic size dynamically for better zoom level
         cam.orthographicSize = Mathf.Max(gridWidth, gridHeight) * 0.65f;
 
-        // Set correct Final Fantasy Tactics camera angle (30Åã tilt, 45Åã initial rotation)
+        // Set correct Final Fantasy Tactics camera angle (30ÔøΩÔøΩ tilt, 45ÔøΩÔøΩ initial rotation)
         transform.rotation = Quaternion.Euler(30, 45, 0);
     }
 
@@ -226,6 +254,8 @@ public class CameraController : MonoBehaviour
 
     float halfwayAngle;
     bool hasTriggeredHalfway;
+
+
     void HandleGridRotation()
     {
         
@@ -270,9 +300,14 @@ public class CameraController : MonoBehaviour
 
                     //Debug.Log("halfway");
 
-                    compass.GetComponent<Compass>().compassShiftCounterClockwise();
-                    playerController = GameObject.FindAnyObjectByType<PlayerController>();
-                    playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
+                    compass.GetComponent<Compass>().compassShiftCounterClockwise();  
+
+                    foreach(Unit u in gameManager.units)
+                    {
+                        u.updateSpriteRotation();
+                    }
+                    //playerController = GameObject.FindAnyObjectByType<PlayerController>();
+                    //playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
                     
 
 
@@ -283,8 +318,14 @@ public class CameraController : MonoBehaviour
                     //Debug.Log("halfway");
 
                     compass.GetComponent<Compass>().compassShiftClockwise();
-                    playerController = GameObject.FindAnyObjectByType<PlayerController>();
-                    playerController.currentUnitGameObject.GetComponent<Unit>().updateSpriteRotation();
+
+                    foreach(Unit u in gameManager.units)
+                    {
+                        u.updateSpriteRotation();
+                    }
+
+                    //playerController = GameObject.FindAnyObjectByType<PlayerController>();
+                    //playerController.currentUnit.updateSpriteRotation();
 
 
 
