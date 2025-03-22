@@ -589,7 +589,7 @@ GameObject:
   - component: {fileID: 2217631893490719613}
   - component: {fileID: 2918396416497983253}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Node
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -718,6 +718,9 @@ MonoBehaviour:
   altitudeCost: 0
   altitude: 0
   isHighlighted: 0
+  hasUnitOnTile: 0
+  gameManager: {fileID: 0}
+  playerController: {fileID: 0}
   highlight: {fileID: 2103708541489263317}
   selectionIndicator: {fileID: 2151526092008939636}
   selectionArrow: {fileID: 1554389941254692374}

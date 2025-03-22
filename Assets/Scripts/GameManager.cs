@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     public GameObject scrollCellPrefab;
 
     public UIManager uiManager;
-    public GameObject compassGameObject;
+    public static Compass Compass;
 
     public List<Unit> units;
 
@@ -58,8 +58,10 @@ public class GameManager : MonoBehaviour
         units = new List<Unit>();
 
         GenerateGrid();
+        
+        Compass = GameObject.FindAnyObjectByType<Compass>();
 
-
+        
 
         units.Add(SpawnUnitWithJobAndAllegiance("Archer", true));
         units.Add(SpawnUnitWithJobAndAllegiance("Black Mage", true));
@@ -73,6 +75,8 @@ public class GameManager : MonoBehaviour
         units.Add(SpawnUnitWithJobAndAllegiance("Thief", true));
         units.Add(SpawnUnitWithJobAndAllegiance("White Mage", true));
 
+        
+        
         
 
         turnCalculator = new TurnCalculator();
@@ -331,6 +335,31 @@ public class GameManager : MonoBehaviour
     IEnumerator ExecuteAfterDelay()
     {
         yield return new WaitForSeconds(1f);
+        
+        
+        //public ActionAbility(string name, int power, int minRange, int maxRange, int mpCost, bool isMagic, AbilitySet category)
+        
+        foreach (Unit unit in units)
+        {
+            if (unit == null)
+            {
+                Debug.LogError("Null unit detected in units list.");
+                continue; // Skip null unit
+            }
+            
+            AbilitySet newAbilitySet = new AbilitySet("Basic");
+            ActionAbility BasicAttack = new ActionAbility("Basic Attack", 20, 1, 1, 0, false, newAbilitySet);
+
+    
+            Debug.Log($"Adding AbilitySet to unit: {unit.name}"); // Log unit name
+    
+            if (newAbilitySet == null)
+            {
+                Debug.LogError("newAbilitySet is null.");
+            }
+
+            unit.AddAbilitySet(newAbilitySet);
+        }
 
         Debug.Log(playerController == null);
         Debug.Log(playerController.currentUnit == null);
@@ -345,7 +374,7 @@ public class GameManager : MonoBehaviour
         }
 
 
-        playerController.setDirectionFacing(new Vector2(0, 1));
+        playerController.currentUnit.setDirectionFacing(new Vector2(0, 1));
         Debug.Log("Executed after 2 seconds");
 
         ChangeState(GameState.DestinationSelect);
@@ -356,47 +385,19 @@ public class GameManager : MonoBehaviour
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        UpdatePathVisualization(); // Runs separately from other logic
+        
 
 
-        if (currentState == GameState.TargetSelect || currentState == GameState.DestinationSelect || currentState == GameState.StandbyDirectionSelect)
-        {
-            //ChangeState(GameState.InAction);
-            vocalTiles();
-            //AttackClickedHighlightTile();
-        }
 
         if (Input.GetMouseButtonDown(0))
         {
+            Node potentialNode = checkIfNodeClicked();
 
-            if (currentState == GameState.DestinationSelect) // Left Click for obstacles
+            if (potentialNode != null)
             {
-                MoveToClickedHighlightedTile();
+                HandleNodeClicked(potentialNode);
             }
-            else if (currentState == GameState.StandbyDirectionSelect)
-            {
-
-                startNewTurnWith(scrollCells[0].unit);
-                
-
-                //this happens after a move action, or after an attack that has already moved.
-
-
-
-            }
-
-            else if (currentState == GameState.TargetSelect)
-            {
-                //ChangeState(GameState.InAction);
-
-                AttackClickedHighlightTile();
-            }
-
-
         }
-
-
-
 
 
 
@@ -406,36 +407,246 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void vocalTiles()
+    public Node checkIfNodeClicked()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))
         {
-            GameObject hoveredObject = hit.collider.gameObject;
+            GameObject clickedObject = hit.collider.gameObject;
 
-            // Check if the hovered object is a tile
+            Debug.Log("Clicked: " + clickedObject.name);
+
+            // Check if it's a Tile
             foreach (Node node in grid)
             {
-                if (node.tileObject == hoveredObject)
+                if (node.tileObject == clickedObject)
                 {
-                    //Debug.Log("Hovered node is " + node.x + ", " + node.y);
-                    //Debug.Log("Current node is " + playerController.currentNode);
-
-                    Vector2 newDirectionToFace = compassGameObject.GetComponent<Compass>()
-                        .GetClosestGridDirection(playerController.currentUnit.currentNode.getGridCoordinates(), node.getGridCoordinates());
-
-
-                    playerController.setDirectionFacing(newDirectionToFace);
-                    playerController.setIndicatorDirectionFacing(newDirectionToFace);
-
-
-
-                    break; // Exit loop once we find the hovered tile
+                    
+                        return node; // Stop checking once we find a match
+                    
                 }
             }
+
+            // Check if it's part of a Unit
+            Unit clickedUnit = hit.collider.GetComponentInParent<Unit>();
+            if (clickedUnit != null)
+            {
+                Debug.Log("Clicked a unit: " + clickedUnit.name);
+                return clickedUnit.currentNode;
+
+            }
+
+            
         }
+        return null;
+    }
+    
+
+    public void HandleNodeClicked(Node clickedNode)
+    {
+
+
+        switch (currentState)
+        {
+
+            case GameState.DestinationSelect:
+                if (clickedNode.isHighlighted)
+                {
+                    //MoveCharacterToNode(clickedNode);
+                    playerController.freezeUnitAndPlaceProjectionAt(clickedNode);
+                    ChangeState(GameState.CommandSelect);
+                }
+
+                break;
+            case GameState.CommandSelect:
+                
+
+                //directionUI.SetActive(false);
+                break;
+            case GameState.TargetSelect:
+                if (clickedNode.isHighlighted)
+                {
+                    playerController.attack();
+                }
+
+                break;
+            case GameState.InAction:
+
+                //actionExecutionUI.SetActive(false);
+                break;
+            case GameState.StandbyDirectionSelect:
+
+                startNewTurnWith(scrollCells[0].unit);
+                break;
+        }
+    }
+
+    public void HandleUnitMouseEnter(Unit hoveredUnit)
+    {
+        Debug.Log("Mouse entered: " + gameObject.name);
+        // Add logic (e.g., change color, highlight, etc.)
+        faceHoveredDirection();
+
+        hoveredUnit.currentNode.SetSelectionIndicatorVisibility(true);
+        hoveredUnit.SetSelectionArrowVisibility(true);
+        uiManager.SetFloatingPanelActive(true);
+        uiManager.floatingPanel.UpdateFloatingPanel(hoveredUnit.Name, hoveredUnit.Level, null, hoveredUnit.currentHP, hoveredUnit.maxHP);
+    }
+    
+    public void HandleUnitMouseExit(Unit hoveredUnit)
+    {
+        Debug.Log("Mouse exited: " + gameObject.name);
+        // Add logic (e.g., remove highlight, reset color, etc.)
+        hoveredUnit.currentNode.SetSelectionIndicatorVisibility(false);
+        hoveredUnit.SetSelectionArrowVisibility(false);
+        uiManager.SetFloatingPanelActive(false);
+    }
+    
+    public void HandleNodeMouseEnter(Node hoveredNode)
+    {
+        switch (currentState)
+        {
+
+            case GameState.DestinationSelect:
+                hoveredNode.SetSelectionIndicatorVisibility(true); 
+                
+                if (hoveredNode.hasUnitOnTile) 
+                {
+                    Debug.Log("there is a unit on  this tile");
+
+                    foreach(Unit u in units)
+                    {
+                        if(u.currentNode == this)
+                        {
+                            u.SetSelectionArrowVisibility(true);
+                            uiManager.SetFloatingPanelActive(true);
+                            uiManager.floatingPanel.UpdateFloatingPanel(u.Name, u.Level, null, u.currentHP, u.maxHP);
+
+                    
+                        }
+                    }
+            
+                }
+                else
+                {
+                    Debug.Log("there is NOT a unit on  this tile");
+
+                    hoveredNode.SetSelectionArrowVisibility(true);
+            
+            
+                }
+                
+                UpdatePathVisualization(); // Runs separately from other logic
+        
+                
+
+                break;
+            case GameState.CommandSelect:
+                playerController.currentHoveredNode = hoveredNode;
+
+                faceHoveredDirection();
+                
+
+                //directionUI.SetActive(false);
+                break;
+            case GameState.TargetSelect:
+                playerController.currentHoveredNode = hoveredNode;
+
+                faceHoveredDirection();
+                
+
+                break;
+            case GameState.InAction:
+
+                //actionExecutionUI.SetActive(false);
+                break;
+            case GameState.StandbyDirectionSelect:
+
+                break;
+        }
+        
+        
+        
+        
+
+
+
+        
+    }
+    
+    public void HandleNodeMouseExit(Node hoveredNode)
+    {
+        hoveredNode.SetSelectionIndicatorVisibility(false);
+
+        
+        hoveredNode.SetSelectionArrowVisibility(false);
+
+        if (hoveredNode.hasUnitOnTile)
+        {
+            uiManager.SetFloatingPanelActive(false);
+
+        }
+        //god this is silly
+        foreach (Unit u in units)
+        {
+            
+            u.SetSelectionArrowVisibility(false);
+
+            
+        }
+    }
+    
+    
+
+
+    public void faceHoveredDirection()
+    {
+        
+        if (playerController == null)
+        {
+            Debug.LogError("playerController is NULL!");
+            return;
+        }
+
+        if (playerController.currentUnit == null)
+        {
+            Debug.LogError("playerController.currentUnit is NULL!");
+            return;
+        }
+
+        if (playerController.currentUnit.currentNode == null)
+        {
+            Debug.LogError("playerController.currentUnit.currentNode is NULL!");
+            return;
+        }
+
+        if (playerController.currentHoveredNode == null)
+        {
+            Debug.LogError("playerController.currentHoveredNode is NULL!");
+            return;
+        }
+
+        if (Compass == null)
+        {
+            Debug.LogError("Compass is NULL!");
+            return;
+        }
+
+        Debug.Log("Current node coordinates: " + playerController.currentUnit.currentNode.getGridCoordinates());
+        Debug.Log("Hovered node coordinates: " + playerController.currentHoveredNode.getGridCoordinates());
+
+        Vector2 newDirectionToFace = Compass
+            .GetClosestGridDirection(playerController.currentUnit.currentNode.getGridCoordinates(), playerController.currentHoveredNode.getGridCoordinates());
+
+        playerController.currentUnit.setDirectionFacing(newDirectionToFace);
+        playerController.currentUnit.setIndicatorDirectionFacing(newDirectionToFace);
+
+
+
+                    
+        
     }
 
 
@@ -457,11 +668,13 @@ public class GameManager : MonoBehaviour
     private void OnExitState(GameState state)
     {
         // Turn off UI elements when leaving a state
-        switch (state)
+        switch (currentState)
         {
 
             case GameState.DestinationSelect:
                 //moveSelectionUI.SetActive(false);
+                clearHighlightedTiles();
+
                 break;
             case GameState.CommandSelect:
                 
@@ -487,7 +700,7 @@ public class GameManager : MonoBehaviour
     private void OnEnterState(GameState state)
     {
         // Activate necessary UI elements when entering a new state
-        switch (state)
+        switch (currentState)
         {
 
             case GameState.DestinationSelect:
@@ -502,6 +715,10 @@ public class GameManager : MonoBehaviour
 
 
                 uiManager.SetUIState(GameState.DestinationSelect);
+                
+                playerController.currentUnit.currentNode.SetSelectionIndicatorModeAlly();
+                playerController.currentUnit.currentNode.SetSelectionIndicatorVisibility(true);
+                
                 currentState = GameState.DestinationSelect;
 
                 break;
@@ -641,7 +858,6 @@ public class GameManager : MonoBehaviour
                         cube.GetComponent<Node>().setValues(x, y, true, topCube, altitude);
                         cube.GetComponent<Node>().gameManager = this;
                         cube.GetComponent<Node>().playerController = playerController;
-                        cube.GetComponent<Node>().uiManager = uiManager;
                         grid[x, y] = cube.GetComponent<Node>();
 
 
@@ -712,73 +928,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-
-
-    void MoveToClickedHighlightedTile()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            GameObject clickedObject = hit.collider.gameObject;
-
-            // Check if the clicked object is a tile
-            foreach (Node node in grid)
-            {
-                if (node.tileObject == clickedObject)
-                {
-
-
-                    if (node.isHighlighted)
-                    {
-                        MoveCharacterToNode(node);
-
-                    }
-
-
-                    break;
-
-                }
-            }
-        }
-    }
-
-
-    void AttackClickedHighlightTile()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            GameObject clickedObject = hit.collider.gameObject;
-
-            Debug.Log("Clicked: " + clickedObject.name);
-
-            // Check if it's a Tile
-            foreach (Node node in grid)
-            {
-                if (node.tileObject == clickedObject)
-                {
-                    if (node.isHighlighted)
-                    {
-                        playerController.attack();
-                    }
-                    return; // Stop checking once we find a match
-                }
-            }
-
-            // Check if it's part of a Unit
-            Unit clickedUnit = hit.collider.GetComponentInParent<Unit>();
-            if (clickedUnit != null)
-            {
-                Debug.Log("Clicked a unit: " + clickedUnit.name);
-                playerController.attack();
-                return; // Prevent unnecessary extra checks
-            }
-        }
-    }
 
 
 

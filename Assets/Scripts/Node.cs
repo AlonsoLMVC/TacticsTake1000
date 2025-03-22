@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-//if I make it a monobehaviour things break at the moment.
+
 public class Node : MonoBehaviour
 {
     public int x, y; // Grid position
@@ -85,6 +85,93 @@ public class Node : MonoBehaviour
         if (highlight != null)
             highlight.SetActive(isVisible);
     }
+    
+    public void SetHighlightDefault()
+    {
+        if (highlight != null)
+        {
+            SpriteRenderer renderer = highlight.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                renderer.color = Color.blue;
+            }
+        }
+    }
+
+    public void SetHighlightInRangeOfEnemyAttack()
+    {
+        if (highlight != null)
+        {
+            SpriteRenderer renderer = highlight.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                renderer.color = new Color(0.5f, 0f, 0.5f); // Purple (R:0.5, G:0, B:0.5)
+            }
+        }
+    }
+
+    public void SetHighlightInRangeOfPlayerAttack()
+    {
+        if (highlight != null)
+        {
+            SpriteRenderer renderer = highlight.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                renderer.color = Color.red;
+            }
+        }
+    }
+
+    
+
+    public void SetSelectionIndicatorModeNormal()
+    {
+        if (selectionIndicator != null)
+        {
+            selectionIndicator.transform.localScale = Vector3.one;
+            selectionIndicator.transform.localPosition = Vector3.zero;
+
+            // Change child sprite colors to white
+            SetChildrenSpriteColor(selectionIndicator, Color.white);
+        }
+    }
+
+    public void SetSelectionIndicatorModeAlly()
+    {
+        if (selectionIndicator != null)
+        {
+            selectionIndicator.transform.localScale = new Vector3(1f, 2f, 1f);;
+            selectionIndicator.transform.localPosition = new Vector3(0, -0.5f, 0);
+
+            // Change child sprite colors to blue
+            SetChildrenSpriteColor(selectionIndicator, Color.cyan);
+            
+        }
+    }
+
+    public void SetSelectionIndicatorModeEnemy()
+    {
+        if (selectionIndicator != null)
+        {
+            selectionIndicator.transform.localScale = new Vector3(1f, 2f, 1f);;
+            selectionIndicator.transform.localPosition = new Vector3(0, -0.5f, 0);
+
+            // Change child sprite colors to red
+            SetChildrenSpriteColor(selectionIndicator, Color.red);
+        }
+    }
+
+    private void SetChildrenSpriteColor(GameObject parent, Color color)
+    {
+        foreach (Transform child in parent.transform)
+        {
+            SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = color;
+            }
+        }
+    }
 
     // Show or hide selection indicator
     public void SetSelectionIndicatorVisibility(bool isVisible)
@@ -119,76 +206,7 @@ public class Node : MonoBehaviour
 
 
 
-
-
-
-    private TileUIManager tileUIManager;
-    private Node nodeReference;
-    public UIManager uiManager;
-
-    void OnMouseEnter()
-    {
-        SetSelectionIndicatorVisibility(true);
-
-
-        if (hasUnitOnTile) 
-        {
-            Debug.Log("there is a unit on  this tile");
-
-            foreach(Unit u in gameManager.units)
-            {
-                if(u.currentNode == this)
-                {
-                    u.SetSelectionArrowVisibility(true);
-                    uiManager.SetFloatingPanelActive(true);
-                    uiManager.floatingPanel.UpdateFloatingPanel(u.Name, u.Level, null, u.currentHP, u.maxHP);
-
-                    
-                }
-            }
-            
-        }
-        else
-        {
-            Debug.Log("there is NOT a unit on  this tile");
-
-            SetSelectionArrowVisibility(true);
-        }
-        
-        playerController.currentHoveredNode = this;
-        
-
-
-    }
-
-    void OnMouseExit()
-    {
-        SetSelectionIndicatorVisibility(false);
-
-        
-        SetSelectionArrowVisibility(false);
-
-        if (hasUnitOnTile)
-        {
-            uiManager.SetFloatingPanelActive(false);
-
-        }
-        //god this is silly
-        foreach (Unit u in gameManager.units)
-        {
-            
-                u.SetSelectionArrowVisibility(false);
-
-            
-        }
-
-
-
-
-
-
-    }
-
+    
 
 
 }

@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 moveDirection;
 
-    private Compass compass;
+    public static Compass Compass;
 
     private GameManager gameManager;
 
@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     {
         
         gameManager = GameObject.FindAnyObjectByType<GameManager>();
-        compass = GameObject.FindAnyObjectByType<Compass>();
+        Compass = GameObject.FindAnyObjectByType<Compass>();
 
 
 
@@ -54,16 +54,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void setDirectionFacing(Vector2 newDirection)
-    {
-        currentUnit.directionFacing = newDirection;
-        currentUnit.updateSpriteRotation();
-    }
 
- public void setIndicatorDirectionFacing(Vector2 newDirection)
-    {
-        currentUnit.directionIndicator.SetEnlargedSphere(newDirection);
-    }   
 
 
 
@@ -154,7 +145,7 @@ public class PlayerController : MonoBehaviour
 
         // Set animation parameters and take into account any kind of camera and compass rotation
         Vector2 xzDir = new Vector2((float)Math.Round(moveDirection.x), (float)Math.Round(moveDirection.z));
-        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(xzDir);
+        Vector2 blendTreeValues = Compass.convertDirectionToBlendTreeDirection(xzDir);
         Debug.Log(xzDir.ToString());
 
         currentUnit.directionFacing = xzDir;
@@ -230,7 +221,6 @@ public class PlayerController : MonoBehaviour
 
             currentUnit.hasMoved = true;
 
-            gameManager.clearHighlightedTiles();
         }
     }
 
@@ -250,7 +240,7 @@ public class PlayerController : MonoBehaviour
 
         // Set animation parameters and take into account any kind of camera and compass rotation
         Vector2 xzDir = new Vector2((float)Math.Round(moveDirection.x), (float)Math.Round(moveDirection.z));
-        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(xzDir);
+        Vector2 blendTreeValues = Compass.convertDirectionToBlendTreeDirection(xzDir);
         //Debug.Log(xzDir.ToString());
 
         currentUnit.directionFacing = xzDir;
@@ -307,7 +297,6 @@ public class PlayerController : MonoBehaviour
             currentUnit.hasMoved = true;
 
 
-            gameManager.clearHighlightedTiles();
 
         }
     }
@@ -317,7 +306,7 @@ public class PlayerController : MonoBehaviour
         gameManager.clearHighlightedTiles();
         //      yield return new WaitForSeconds(1f);
 
-        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(currentUnit.directionFacing);
+        Vector2 blendTreeValues = Compass.convertDirectionToBlendTreeDirection(currentUnit.directionFacing);
 
         currentUnit.weaponAnimator.SetFloat("directionX", blendTreeValues.x);
         currentUnit.weaponAnimator.SetFloat("directionZ", blendTreeValues.y);
@@ -351,8 +340,44 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    public Unit frozenUnit;
+    
+    public void freezeUnitAndPlaceProjectionAt(Node targetNode)
+    {
+        if (currentUnit == null) return;
+
+        frozenUnit = currentUnit;
+
+        // 1. Create a projection (duplicate unit)
+        GameObject projection = Instantiate(currentUnit.gameObject);
+    
+        // 2. Place projection on the target tile
+        projection.transform.position = targetNode.tileObject.transform.position + new Vector3(0, placementOffset, 0);
+        
+        projection.GetComponent<Unit>().mainAnimator.speed = 1;
+        projection.GetComponent<Unit>().updateSpriteRotation();
+        projection.GetComponent<Unit>().currentNode = targetNode;
+        
+        // 3. Freeze the unit's animation
+        Animator unitAnimator = currentUnit.mainAnimator;
+        if (unitAnimator != null)
+        {
+            unitAnimator.speed = 0; // Pause animation
+        }
+
+        // 4. Make the original unit semi-transparent
+        SpriteRenderer unitRenderer = currentUnit.transform.Find("Sprite").GetComponent<SpriteRenderer>();
+        if (unitRenderer != null)
+        {
+            unitRenderer.color = new Color(1, 1, 1, 0.5f); // 50% transparency
+        }
+
+        currentUnit = projection.GetComponent<Unit>();
+        
 
 
+
+    }
 
 
 

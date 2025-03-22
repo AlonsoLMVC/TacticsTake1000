@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileUIManager : MonoBehaviour
+public class NodeUIManager : MonoBehaviour
 {
     public GameObject highlight;
     public GameObject selectionIndicator;

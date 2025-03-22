@@ -18,7 +18,7 @@ public class Unit : MonoBehaviour
 
     public Animator mainAnimator;
     public Animator weaponAnimator;
-    private Compass compass;
+
     public DirectionIndicator directionIndicator;
 
     public Sprite displaySprite;
@@ -28,6 +28,8 @@ public class Unit : MonoBehaviour
     public Node currentNode;
 
     public GameObject selectionArrow;
+    
+    
 
 
 
@@ -52,15 +54,13 @@ public class Unit : MonoBehaviour
 
     private void Start()
     {
-
-
         
-        compass = GameObject.FindAnyObjectByType<Compass>();
-        
-        
-
+ 
+        AbilitySets = new List<AbilitySet>();
        
     }
+    
+    
 
     public void setJobandAllegianceAndInitialize(string job, bool isAllied)
     {
@@ -218,7 +218,7 @@ public class Unit : MonoBehaviour
     public void updateSpriteRotation()
     {
         Debug.Log("Trying to update sprite rotation");
-        Vector2 blendTreeValues = compass.convertDirectionToBlendTreeDirection(directionFacing);
+        Vector2 blendTreeValues = PlayerController.Compass.convertDirectionToBlendTreeDirection(directionFacing);
 
         mainAnimator.SetFloat("directionX", blendTreeValues.x);
         mainAnimator.SetFloat("directionZ", blendTreeValues.y);
@@ -266,24 +266,17 @@ public class Unit : MonoBehaviour
     }
 
     public UIManager uiManager;
-
-    public void OnHoverEnter()
+    
+    public void setDirectionFacing(Vector2 newDirection)
     {
-        Debug.Log("Mouse entered: " + gameObject.name);
-        // Add logic (e.g., change color, highlight, etc.)
-
-        currentNode.SetSelectionIndicatorVisibility(true);
-        SetSelectionArrowVisibility(true);
-        uiManager.SetFloatingPanelActive(true);
-        uiManager.floatingPanel.UpdateFloatingPanel(Name, Level, null, currentHP, maxHP);
+        directionFacing = newDirection;
+        updateSpriteRotation();
     }
 
-    public void OnHoverExit()
-    { 
-        Debug.Log("Mouse exited: " + gameObject.name);
-        // Add logic (e.g., remove highlight, reset color, etc.)
-        currentNode.SetSelectionIndicatorVisibility(false);
-        SetSelectionArrowVisibility(false);
-        uiManager.SetFloatingPanelActive(false);
-    }
+    public void setIndicatorDirectionFacing(Vector2 newDirection)
+    {
+        directionIndicator.SetEnlargedSphere(newDirection);
+    }   
+
+
 }
