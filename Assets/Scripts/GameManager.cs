@@ -563,7 +563,8 @@ public class GameManager : MonoBehaviour
                 //actionExecutionUI.SetActive(false);
                 break;
             case GameState.StandbyDirectionSelect:
-
+                
+                faceHoveredDirection();
                 break;
         }
         
