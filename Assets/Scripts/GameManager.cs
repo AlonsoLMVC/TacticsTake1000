@@ -65,13 +65,7 @@ public class GameManager : MonoBehaviour
         units.Add(SpawnUnitWithJobAndAllegiance("Thief", true));
         units.Add(SpawnUnitWithJobAndAllegiance("White Mage", true));
 
-<<<<<<< HEAD
-        
-        
-        
-=======
         playerController.currentUnit = units[4];
->>>>>>> parent of 91ff0e6 (TURNS WORKING)
 
 
 
@@ -242,31 +236,6 @@ public class GameManager : MonoBehaviour
     IEnumerator ExecuteAfterDelay()
     {
         yield return new WaitForSeconds(1f);
-        
-        
-        //public ActionAbility(string name, int power, int minRange, int maxRange, int mpCost, bool isMagic, AbilitySet category)
-        
-        foreach (Unit unit in units)
-        {
-            if (unit == null)
-            {
-                Debug.LogError("Null unit detected in units list.");
-                continue; // Skip null unit
-            }
-            
-            AbilitySet newAbilitySet = new AbilitySet("Basic");
-            ActionAbility BasicAttack = new ActionAbility("Basic Attack", 20, 1, 1, 0, false, newAbilitySet);
-
-    
-            Debug.Log($"Adding AbilitySet to unit: {unit.name}"); // Log unit name
-    
-            if (newAbilitySet == null)
-            {
-                Debug.LogError("newAbilitySet is null.");
-            }
-
-            unit.AddAbilitySet(newAbilitySet);
-        }
 
         Debug.Log(playerController == null);
         Debug.Log(playerController.currentUnit == null);
@@ -279,148 +248,10 @@ public class GameManager : MonoBehaviour
         }
 
 
-        playerController.currentUnit.setDirectionFacing(new Vector2(0, 1));
+        playerController.setDirectionFacing(new Vector2(0, 1));
         Debug.Log("Executed after 2 seconds");
 
         ChangeState(GameState.DestinationSelect);
-    }
-
-
-    private void Update()
-    {
-        if (EventSystem.current.IsPointerOverGameObject()) return;
-
-        
-
-
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            Node potentialNode = checkIfNodeClicked();
-
-            if (potentialNode != null)
-            {
-                HandleNodeClicked(potentialNode);
-            }
-<<<<<<< HEAD
-=======
-            else if (currentState == GameState.StandbyDirectionSelect)
-            {
-
-
-                ChangeState(GameState.CommandSelect);
-
-                //this happens after a move action, or after an attack that has already moved.
-
-
-
-            }
-
-            else if (currentState == GameState.TargetSelect)
-            {
-                //ChangeState(GameState.InAction);
-
-                AttackClickedHighlightTile();
-            }
-
-
->>>>>>> parent of 91ff0e6 (TURNS WORKING)
-        }
-
-
-
-        if (Input.GetKeyDown(KeyCode.R)) // Reset scene
-        {
-            ReloadScene();
-        }
-    }
-
-    public Node checkIfNodeClicked()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            GameObject clickedObject = hit.collider.gameObject;
-
-            Debug.Log("Clicked: " + clickedObject.name);
-
-            // Check if it's a Tile
-            foreach (Node node in grid)
-            {
-                if (node.tileObject == clickedObject)
-                {
-                    
-                        return node; // Stop checking once we find a match
-                    
-                }
-            }
-
-            // Check if it's part of a Unit
-            Unit clickedUnit = hit.collider.GetComponentInParent<Unit>();
-            if (clickedUnit != null)
-            {
-                Debug.Log("Clicked a unit: " + clickedUnit.name);
-                return clickedUnit.currentNode;
-
-            }
-
-            
-        }
-        return null;
-    }
-    
-
-    public void HandleNodeClicked(Node clickedNode)
-    {
-
-
-        switch (currentState)
-        {
-
-            case GameState.DestinationSelect:
-                if (clickedNode.isHighlighted)
-                {
-                    //MoveCharacterToNode(clickedNode);
-                    playerController.freezeUnitAndPlaceProjectionAt(clickedNode);
-                    ChangeState(GameState.CommandSelect);
-                }
-
-                break;
-            case GameState.CommandSelect:
-                
-
-                //directionUI.SetActive(false);
-                break;
-            case GameState.TargetSelect:
-                if (clickedNode.isHighlighted)
-                {
-                    playerController.attack();
-                }
-
-                break;
-            case GameState.InAction:
-
-                //actionExecutionUI.SetActive(false);
-                break;
-            case GameState.StandbyDirectionSelect:
-
-                startNewTurnWith(scrollCells[0].unit);
-                break;
-        }
-    }
-
-    public void HandleUnitMouseEnter(Unit hoveredUnit)
-    {
-        Debug.Log("Mouse entered: " + gameObject.name);
-        // Add logic (e.g., change color, highlight, etc.)
-        faceHoveredDirection();
-
-        hoveredUnit.currentNode.SetSelectionIndicatorVisibility(true);
-        hoveredUnit.SetSelectionArrowVisibility(true);
-        uiManager.SetFloatingPanelActive(true);
-        uiManager.floatingPanel.UpdateFloatingPanel(hoveredUnit.Name, hoveredUnit.Level, null, hoveredUnit.currentHP, hoveredUnit.maxHP);
     }
     
     public void HandleUnitMouseExit(Unit hoveredUnit)
@@ -859,8 +690,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-<<<<<<< HEAD
-=======
     void MoveToClickedHighlightedTile()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
