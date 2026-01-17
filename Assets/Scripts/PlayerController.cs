@@ -56,21 +56,7 @@ public class PlayerController : MonoBehaviour
         uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.currentHP, newUnit.maxHP);
 
     }
-    public void switchUnit(Unit newUnit)
-    {
-        currentUnit = newUnit;
 
-
-        Debug.Log($"Switching unit to: {newUnit?.name ?? "NULL"}");
-
-        
-
-        uiManager.profilePicturePanel.SetProfileImage(newUnit.displaySprite);
-        uiManager.profilePicturePanel.SetLevelText(newUnit.Level);
-
-        uiManager.detailsPanel.UpdateDetails(newUnit.Name, newUnit.Job, null, newUnit.currentHP, newUnit.maxHP);
-
-    }
 
 
     private void Update()

@@ -18,6 +18,11 @@ public class GameManager : MonoBehaviour
         StandbyDirectionSelect, // Choosing facing direction
     }
 
+    internal void HandleUnitMouseEnter(Unit unit)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public GameState currentState;
 
 
@@ -248,7 +253,7 @@ public class GameManager : MonoBehaviour
         }
 
 
-        playerController.setDirectionFacing(new Vector2(0, 1));
+        playerController.currentUnit.setDirectionFacing(new Vector2(0, 1));
         Debug.Log("Executed after 2 seconds");
 
         ChangeState(GameState.DestinationSelect);
@@ -755,7 +760,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
->>>>>>> parent of 91ff0e6 (TURNS WORKING)
 
 
 
